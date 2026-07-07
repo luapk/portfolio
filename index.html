@@ -294,15 +294,18 @@
             color: #ccff00;
         }
 
-        /* The x device in crossover titles: a straight thin-line multiplication
-           sign, sized up to match the weight and reach of the / device */
+        /* The x device in crossover titles: drawn as a two-line SVG so it can be
+           large yet hairline-thin (a font glyph gets thicker as it grows). Its
+           box sits on the text baseline to align with the base of the type row. */
         h1 .thin-x {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 100;
-            font-size: 1.15em;
-            line-height: 0; /* keep the larger glyph from expanding the line box */
-            vertical-align: -0.06em;
+            display: inline-block;
+            width: 0.82em;
+            height: 0.82em;
+            vertical-align: baseline;
+            margin: 0 0.12em;
         }
+        h1 .thin-x svg { display: block; width: 100%; height: 100%; overflow: visible; }
+        h1 .thin-x line { stroke: currentColor; stroke-width: 1; }
         
         p { 
             font-family: 'Roboto', sans-serif;
@@ -1082,7 +1085,7 @@
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
-            <h1>Telekom <span class="thin-x">&times;</span><br>Stranger Things</h1>
+            <h1>Telekom <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Stranger Things</h1>
             <p>How to weave a tech brand into Netflix's most watched show of all time.</p>
             <button type="button" class="btn" onclick="openDetail('magentatv')">View Campaign</button>
         </div>
@@ -1192,7 +1195,7 @@
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ps-battlefield.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">M. van Heijningen</span></div>
-            <h1>PlayStation <span class="thin-x">&times;</span><br>Battlefield 6</h1>
+            <h1>PlayStation <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Battlefield 6</h1>
             <p>Deconstructing the chaos of war to showcase next-gen immersion.</p>
             <button type="button" class="btn" onclick="openDetail('ps_battlefield')">Watch Spot</button>
         </div>
@@ -1242,7 +1245,7 @@
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ea-closer.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Cinematography</span></div>
-            <h1>PlayStation <span class="thin-x">&times;</span><br>EAFC</h1>
+            <h1>PlayStation <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>EAFC</h1>
             <p>Innovative macro-cinematography that pulls players into the game's molecular detail.</p>
             <button type="button" class="btn" onclick="openDetail('fc_closer')">Get Closer</button>
         </div>
