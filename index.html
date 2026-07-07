@@ -289,6 +289,29 @@
             transition: color 0.2s ease;
         }
         .grid-card:hover .grid-title, .grid-card:focus-visible .grid-title { color: #ccff00; }
+
+        /* Hover reveals: tags fade in over the thumb (echoing the cinematic
+           slides' top-left tag row), subline fades up beneath the title.
+           The subline keeps its space when hidden so the grid never reflows. */
+        .grid-tags {
+            position: absolute; top: 12px; left: 12px;
+            display: flex; gap: 6px; flex-wrap: wrap;
+            opacity: 0; transform: translateY(-6px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+        }
+        .grid-tags .tag { font-size: 0.6rem; padding: 3px 8px; }
+        .grid-sub {
+            font-family: 'Roboto', sans-serif; font-weight: 300;
+            font-size: 0.85rem; line-height: 1.45; color: #bbb;
+            margin-top: 8px; max-width: 40ch;
+            opacity: 0; transform: translateY(8px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .grid-card:hover .grid-tags, .grid-card:focus-visible .grid-tags,
+        .grid-card:hover .grid-sub, .grid-card:focus-visible .grid-sub {
+            opacity: 1; transform: translateY(0);
+        }
         @media (max-width: 1000px) {
             html.grid-mode .work-grid { grid-template-columns: repeat(2, 1fr); }
         }
@@ -2546,12 +2569,30 @@
             v.src = source.getAttribute('src');
             thumb.appendChild(v);
 
+            // Tags fade in over the thumb on hover, as on the cinematic slide
+            const tagRow = slide.querySelector('.tag-row');
+            if (tagRow) {
+                const tags = document.createElement('div');
+                tags.className = 'grid-tags';
+                tags.innerHTML = tagRow.innerHTML;
+                thumb.appendChild(tags);
+            }
+
             const title = document.createElement('div');
             title.className = 'grid-title';
             title.innerHTML = h1.innerHTML.replace(/<br\s*\/?>/gi, ' ');
 
             card.appendChild(thumb);
             card.appendChild(title);
+
+            // Subline fades up beneath the title on hover
+            const slideSub = slide.querySelector('.content p');
+            if (slideSub) {
+                const sub = document.createElement('div');
+                sub.className = 'grid-sub';
+                sub.textContent = slideSub.textContent;
+                card.appendChild(sub);
+            }
             card.addEventListener('mouseenter', () => v.play().catch(() => {}));
             card.addEventListener('mouseleave', () => v.pause());
             workGrid.appendChild(card);
