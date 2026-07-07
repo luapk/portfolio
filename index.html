@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Paul Knott</title>
+    
+    <meta name="description" content="Portfolio of Paul Knott, Creative Director at adam&eve /TBWA. Work includes Honda 'The Other Side', Stranger Things x MagentaTV, and FIFA 'El Tornado'.">
+    <meta name="keywords" content="Paul Knott, Creative Director, Advertising, adam&eve /TBWA, Wieden+Kennedy, AI, Film">
+    <meta name="author" content="Paul Knott">
+    
+    <meta property="og:title" content="Paul Knott">
+    <meta property="og:description" content="Film, Interactive, and AI Innovation.">
+    <meta property="og:image" content="assets/images/social-share.jpg">
+    <meta property="og:url" content="https://www.paulknott.com">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. GLOBAL & RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* --- CUSTOM FONT LOADING (MIGRA) --- */
+        @font-face {
+            font-family: 'Migra';
+            src: url('assets/fonts/Migra-Extrabold.woff2') format('woff2');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        html {
+            /* FIXED: Changed back to proximity to prevent getting stuck in the footer */
+            scroll-snap-type: y proximity;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300; 
+            line-height: 1.6;
+            overflow-x: hidden; 
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: none;
+        }
+
+        /* --- 2. NAV BAR --- */
+        .nav-bar {
+            position: fixed;
+            top: 30px; left: 0; width: 100%;
+            height: 0; 
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 200; /* Increased Z-index */
+            mix-blend-mode: normal; 
+            overflow: visible;
+            /* FIXED: Hardware accelerate the nav bar to stop flickering */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* UPDATED LOGO CONTAINER - TAG STYLE */
+        .logo-container {
+            display: flex;
+            gap: 10px; 
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .logo-tag {
+            font-family: 'Roboto', sans-serif;
+            padding: 5px 10px; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .logo-name {
+            background: #fff; 
+            color: #000; 
+            font-weight: 700;
+        }
+
+        .logo-role {
+            background: #000; 
+            color: #fff; 
+            font-weight: 300; 
+            border: none;     
+        }
+
+        /* BURGER MENU ICON */
+        .burger {
+            width: 30px; height: 20px; cursor: pointer;
+            display: flex; flex-direction: column; justify-content: space-between;
+            z-index: 210;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+            margin-top: 5px; 
+            mix-blend-mode: difference;
+        }
+        .burger span {
+            display: block; width: 100%; height: 2px; background: #fff; transition: all 0.3s ease;
+        }
+        .burger:hover span { background: #ccff00; }
+        .burger.active { opacity: 0; pointer-events: none; }
+
+        /* --- 3. MENU OVERLAY --- */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 150;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+        .overlay ul { list-style: none; text-align: center; }
+        .overlay a {
+            font-family: 'Migra', serif; 
+            font-weight: 800; 
+            font-size: 4rem; 
+            color: #fff; 
+            text-decoration: none;
+            display: block; margin: 20px; cursor: pointer;
+            transition: color 0.3s;
+        }
+        .overlay a:hover { color: #ccff00; }
+
+        /* --- 4. THE PROJECT SLIDES --- */
+        .project-slide {
+            position: sticky; 
+            top: 0;            
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            background-color: #222;
+            scroll-snap-align: start;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.7);
+            
+            /* Stability improvements */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        /* FIXED: Footer specific styles to prevent glitching */
+        .project-slide:last-of-type { 
+            position: relative; 
+            background-color: #111; 
+            z-index: 99; /* Higher than sticky slides to ensure clean cover */
+            box-shadow: none; /* No shadow needed for the footer itself */
+        }
+
+        .bg-image, .bg-video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0.6; transition: transform 10s ease; z-index: 0;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        .project-slide:hover .bg-image, .project-slide:hover .bg-video { transform: scale(1.05); }
+
+        .content {
+            position: relative; z-index: 10; width: 100%; max-width: 1200px;
+            margin: 0 auto; padding: 0 40px 80px 40px;
+        }
+
+        /* --- TAGS --- */
+        .tag-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
+        .tag { 
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500; 
+            padding: 5px 10px; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            background: #fff; color: #000; 
+            letter-spacing: 0.5px;
+        }
+        .tag-row .tag:nth-child(2) { background: #000; color: #fff; border: none; }
+
+        /* HEADLINES */
+        h1 { 
+            font-family: 'Migra', serif;
+            font-weight: 800;
+            font-size: 5rem; 
+            line-height: 0.9; 
+            margin-bottom: 10px; 
+            letter-spacing: -2px; 
+        }
+
+        /* Project Headers Lime Green */
+        .project-slide .content h1 {
+            color: #ccff00;
+        }
+        
+        p { 
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            font-size: 1.2rem; max-width: 600px; margin-bottom: 40px; line-height: 1.5; 
+        }
+
+        /* Prevent widows specifically on scrolling slides */
+        .project-slide .content p {
+            text-wrap: balance;
+        }
+        
+        /* BUTTONS */
+        .btn {
+            font-family: 'Roboto', sans-serif; 
+            font-weight: 400;                  
+            font-size: 11px;                    
+            padding: 12px 24px;                 
+            border: 1px solid #fff;
+            background: none;
+            color: #fff; 
+            text-decoration: none;
+            text-transform: uppercase; 
+            display: inline-block; 
+            cursor: pointer;
+            transition: color 0.3s ease, border-color 0.3s ease;
+            letter-spacing: 1.5px;
+            position: relative;
+            z-index: 50;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: #ccff00;
+            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn:hover::before { left: 0; }
+        .btn:hover { 
+            border-color: #ccff00;
+            color: #000; 
+        }
+
+        /* --- 5. FOOTER INDEX SLIDE --- */
+        .footer-slide {
+            background-color: #111;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px;
+            min-height: 100vh;
+        }
+        .footer-content { width: 100%; max-width: 1000px; position: relative; z-index: 10; }
+
+        .index-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px 30px; margin-bottom: 80px; width: 100%;
+        }
+
+        .index-item {
+            font-family: 'Roboto', sans-serif; font-weight: 400;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+            color: #fff; padding: 10px 15px;
+            text-decoration: none; cursor: pointer;
+            transition: all 0.2s ease; border: 1px solid transparent; 
+            text-align: left; line-height: 1.4;
+        }
+        .index-item:hover { background-color: #ccff00; color: #000; }
+
+        .footer-socials { display: flex; gap: 30px; padding-top: 40px; border-top: 1px solid #333; }
+        .footer-socials .contact-icon img { width: 32px; height: 32px; }
+        .footer-socials .contact-icon:hover img { filter: brightness(0) invert(1); transform: scale(1.1); transition: all 0.3s; }
+
+
+        /* --- 6. DETAIL PANELS --- */
+        .detail-panel {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #010202; /* Rich Black */
+            color: #fff; z-index: 300; /* Ensure detail panels are above everything */
+            overflow-y: auto; transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .detail-panel.open { transform: translateY(0); }
+        
+        .detail-container { 
+            max-width: 1200px; margin: 0 auto; padding: 100px 40px 60px 40px; 
+            text-align: left;
+        }
+        
+        /* CLOSE BUTTON */
+        .close-detail {
+            position: fixed; top: 30px; right: 40px;
+            width: 45px; height: 45px;
+            border: 1px solid #fff;
+            font-family: 'Roboto', sans-serif; font-weight: 400;
+            font-size: 1.2rem; color: #fff; 
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 310; transition: all 0.3s ease;
+        }
+        .close-detail:hover { background-color: #ccff00; border-color: #ccff00; color: #000; }
+
+        .detail-video-wrapper { 
+            width: 100%; aspect-ratio: 16 / 9; height: auto; 
+            background: #000; margin-bottom: 50px; position: relative; 
+        }
+        
+        .detail-meta { 
+            font-family: 'Roboto', sans-serif; font-weight: 500;
+            font-size: 0.85rem; color: #888; 
+            text-transform: uppercase; letter-spacing: 1px; 
+            display: inline-block; border-bottom: 1px solid #444; 
+            padding-bottom: 15px; margin-bottom: 30px; 
+        }
+        
+        /* DETAIL TITLES */
+        .detail-title { 
+            font-family: 'Migra', serif; font-weight: 800;
+            font-size: 4rem; 
+            line-height: 0.9; letter-spacing: -1px; 
+            color: #fff; 
+            display: inline-block; 
+            border-bottom: 2px solid; 
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+        #aboutPanel .detail-title { border-color: #ccff00; }
+        #personalPanel .detail-title { border-color: #ccff00; }
+        #detailPanel .detail-title { border-bottom: none; display: block; }
+
+        /* Project Logo (Replaces Title) */
+        .project-logo {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 400px; /* Adjust based on preference */
+            margin-bottom: 40px;
+        }
+
+        .detail-desc { 
+            font-family: 'Roboto', sans-serif; font-weight: 300;
+            font-size: 1.5rem; line-height: 1.4; color: #ccc; 
+            max-width: 800px; margin-bottom: 40px; 
+        }
+
+        /* --- SPECIAL INTRO TEXT STYLE (Full Width, Larger) --- */
+        .intro-text-large {
+            font-family: 'Roboto', sans-serif;
+            font-size: 2.2rem;
+            line-height: 1.3;
+            font-weight: 300;
+            color: #fff;
+            max-width: 100%; /* Full width override */
+            margin-bottom: 60px;
+        }
+
+        /* --- HERO OVERLAY STYLE (PERSONAL PROJECTS) --- */
+        .hero-overlay {
+            position: relative;
+            width: 100%;
+            min-height: 80vh; /* Takes up most of the viewport */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 60px;
+            margin-bottom: 60px;
+        }
+        .hero-overlay::after {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.3); z-index: 1; /* Darken overlay */
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 900px; }
+        
+        .hero-title {
+            font-family: 'Migra', serif; font-weight: 800;
+            font-size: 5rem; line-height: 0.9; 
+            color: #ccff00; /* Lime Green */
+            margin-bottom: 20px;
+        }
+        .hero-body {
+            font-family: 'Roboto', sans-serif; font-weight: 300;
+            font-size: 1.2rem; color: #fff; line-height: 1.5;
+        }
+
+        /* --- VIDEO ROW (3 videos side by side) --- */
+        .video-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+        
+        .video-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-wrapper-916 {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background: #000;
+        }
+        
+        .video-caption {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 11px;
+            color: #888;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-align: left;
+        }
+        .video-caption em {
+            font-style: italic;
+            color: #666;
+        }
+
+        /* --- CREDITS & AWARDS TOGGLE STYLES --- */
+        .credits-container {
+            border-top: 1px solid #333;
+            /* Removed bottom border as requested */
+            margin-bottom: 40px;
+            max-width: 900px;
+        }
+        .credits-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 0;
+            cursor: pointer;
+        }
+        .credits-label {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #fff;
+        }
+        .credits-toggle {
+            width: 30px; height: 30px;
+            border: 1px solid #fff;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            user-select: none;
+            padding-bottom: 2px;
+        }
+        .credits-header:hover .credits-toggle {
+            background: #ccff00;
+            border-color: #ccff00;
+            color: #000;
+        }
+        .credits-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .credits-content ul {
+            list-style: none;
+            padding-bottom: 30px;
+            padding-top: 10px;
+        }
+        .credits-item {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #aaa; 
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        /* --- BUY BUTTON STYLE (Matches Credits) --- */
+        .buy-list { list-style: none; padding-top: 10px; padding-bottom: 30px; }
+        .buy-list li { margin-bottom: 10px; }
+        .buy-list a {
+            font-family: 'Roboto', sans-serif; font-weight: 400;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+            color: #fff; text-decoration: underline; text-decoration-color: #ccff00; text-decoration-thickness: 1px;
+            transition: all 0.2s ease;
+        }
+        .buy-list a:hover { background-color: #ccff00; color: #000; text-decoration: none; }
+
+
+        .extra-video-block { margin-top: 80px; max-width: 100%; }
+        .extra-video-title {
+            font-family: 'Roboto', sans-serif; font-weight: 500;
+            font-size: 1.5rem; margin-bottom: 20px; color: #fff;
+        }
+
+        /* IMAGE STACK & CAPTIONS */
+        .image-stack { margin-top: 60px; display: flex; flex-direction: column; gap: 30px; }
+        .stack-img { width: 100%; height: auto; display: block; object-fit: cover; }
+        
+        /* New 2-Column Uniform Grid (1fr 1fr) */
+        .grid-gallery-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+        .grid-gallery-2col img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+
+        figure { margin: 0; padding: 0; width: 100%; }
+        figcaption {
+            font-family: 'Roboto', sans-serif; font-weight: 300;
+            font-size: 0.9rem; color: #888;
+            margin-top: 10px; margin-bottom: 30px; text-align: left;
+        }
+
+        /* QUOTE STYLES */
+        .quote-row {
+            display: flex;
+            align-items: center; 
+            margin-bottom: 5px; /* Tightly packed */
+            gap: 20px;
+        }
+        .quote-logo {
+            width: auto;
+            height: 78px; 
+            object-fit: contain;
+        }
+        .quote-text {
+            /* Matched to footer/credits font style */
+            font-family: 'Roboto', sans-serif; 
+            font-weight: 400;
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            color: #fff;
+            line-height: 1.4;
+            font-style: normal;
+        }
+        
+        /* ARTICLE STYLES */
+        .article-block {
+            margin-top: 60px;
+            max-width: 800px;
+            color: #fff;
+        }
+        .article-title {
+            /* UPDATED for Mercedes Request: Roboto ExtraBold */
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #444; 
+        }
+        .article-text {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ccc;
+            white-space: pre-wrap; /* Preserves line breaks from text */
+        }
+
+        .grid-layout {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px; margin-top: 60px; border-top: 1px solid #333; padding-top: 40px;
+        }
+        
+        /* AWARDS SPECIFIC STYLES (NEW TEXT ONLY GRID) */
+        .about-awards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+        
+        .about-awards-text {
+            /* Exact styling from footer .index-item as requested */
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        /* Header within awards text is just bold */
+        .about-awards-text h4 {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 11px;
+            /* CHANGED to inline-block so border matches text width */
+            display: inline-block;
+            /* CHANGED border color to lime green */
+            border-bottom: 1px solid #ccff00; 
+            padding-bottom: 4px;
+        }
+        
+        .about-awards-text div {
+             color: #aaa; /* Slightly softer for the items vs the header */
+        }
+
+        .award-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .award-icon {
+            height: 50px;
+            width: auto;
+            margin-right: 25px;
+        }
+        .award-text {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #fff;
+            line-height: 1.4;
+        }
+        
+        .personal-card { margin-bottom: 40px; }
+        .personal-card video { width: 100%; aspect-ratio: 16/9; object-fit: cover; margin-bottom: 25px; display: block; background: #222; }
+        .personal-card h3 { 
+            font-family: 'Roboto', sans-serif; font-weight: 700;
+            font-size: 2rem; margin-bottom: 10px; color: #fff; 
+        }
+        .personal-card p { 
+            font-family: 'Roboto', sans-serif; font-weight: 300;
+            color: #aaa; margin-bottom: 20px; line-height: 1.5; font-size: 1.1rem; 
+        }
+        .personal-link { 
+            font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 11px;
+            padding: 12px 24px; border: 1px solid #fff; color: #fff; 
+            text-decoration: none; text-transform: uppercase; display: inline-block; 
+            cursor: pointer; transition: all 0.3s ease; letter-spacing: 1.5px;
+        }
+        .personal-link:hover { background: #ccff00; border-color: #ccff00; color: #000; }
+
+        /* ABOUT */
+        .about-text { 
+            font-family: 'Roboto', sans-serif;
+            font-size: 2.2rem; line-height: 1.3; font-weight: 300; color: #fff; max-width: 900px; 
+        }
+        .about-text strong { font-weight: 700; color: #fff; }
+        .bio-link, .easter-egg {
+            color: #fff; text-decoration: underline; text-decoration-thickness: 2px;
+            text-decoration-color: #ccff00; cursor: pointer; transition: background 0.3s;
+        }
+        .bio-link:hover, .easter-egg:hover { background-color: #ccff00; color: #000; }
+
+        .contact-row { display: flex; gap: 30px; margin-top: 60px; padding-top: 40px; border-top: 1px solid #333; }
+        .contact-icon img { width: 32px; height: 32px; transition: filter 0.3s ease, transform 0.3s ease; }
+        .contact-icon:hover img { filter: brightness(0) invert(1); transform: scale(1.1); }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .detail-title { font-size: 2.5rem; }
+            .hero-title { font-size: 3rem; }
+            .overlay a { font-size: 3rem; }
+            .about-text { font-size: 1.5rem; }
+            .index-grid { grid-template-columns: 1fr; }
+            .video-row { grid-template-columns: 1fr; }
+            .grid-gallery-2col { grid-template-columns: 1fr; }
+            
+            .project-slide {
+                height: auto;
+                min-height: 100vh;
+                padding-bottom: 100px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav-bar">
+        <div class="logo-container" onclick="location.reload()">
+            <div class="logo-tag logo-name">PAUL KNOTT</div>
+            <div class="logo-tag logo-role">CREATIVE DIRECTOR</div>
+        </div>
+        <div class="burger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="overlay" id="overlay">
+        <div class="close-detail" onclick="closeMenu()">✕</div>
+        <ul>
+            <li><a onclick="openAbout()">About</a></li>
+            <li><a onclick="closeMenu()">Work</a></li>
+            <li><a onclick="openPersonal()">Personal</a></li>
+            <li><a href="/cdn-cgi/l/email-protection#1b6b7a6e777075746f6f5b7c767a727735787476">Contact</a></li>
+        </ul>
+    </div>
+
+    <div class="detail-panel" id="aboutPanel">
+        <div class="close-detail" onclick="closeAbout()">✕</div>
+        <div class="detail-container">
+            <h2 class="detail-title">About</h2>
+            <div class="about-text">
+                Paul is a strategically-minded global Creative Director at <strong>adam&eve /TBWA</strong>. He leads cross-discipline teams to build campaigns spanning branded entertainment, gaming and emerging tech. He's passionate about navigating the new stuff, while keeping the work human, effective and embedded in culture.<br><br> 
+                Highlights include creating a mini-episode of <span class="bio-link" onclick="openDetail('magentatv')">Stranger Things</span>, 
+                teaching Cristiano Ronaldo a new skill move to launch <span class="bio-link" onclick="openDetail('fifa_tornado')">FIFA18</span>, helping Google to map <span class="bio-link" onclick="openDetail('google_loch')">Loch Ness</span> in StreetView, 
+                <span class="bio-link" onclick="openDetail('honda')">'The Other Side'</span> for Honda, working with Wes Anderson for H&M <span class="bio-link" onclick="openDetail('hm')">'Come Together'</span> (he had a nice suit) 
+                and recreating <span class="bio-link" onclick="openDetail('johnlewis')">'Bohemian Rhapsody'</span> for John Lewis and Partners.<br><br>
+                He makes <span class="easter-egg" onclick="openPersonal()">awful music with synthesisers</span> in his spare time.
+            </div>
+
+            <div class="credits-container" style="margin-top: 60px; border: none;">
+                <div class="credits-header" onclick="toggleAboutAwards()">
+                    <div class="credits-toggle" id="aboutAwardsToggle">+</div>
+                    <span class="credits-label">Awards</span>
+                </div>
+                <div class="credits-content" id="aboutAwardsContent">
+                    <div class="about-awards-grid">
+                        
+                        <div class="about-awards-text">
+                            <h4>CANNES LIONS</h4>
+                            <div>GOLD x10</div>
+                            <div>SILVER x9</div>
+                            <div>BRONZE x18</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>D&AD</h4>
+                            <div>YELLOW PENCIL x6</div>
+                            <div>GRAPHITE PENCIL x7</div>
+                            <div>WOOD PENCIL x14</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>THE ONE SHOW</h4>
+                            <div>GOLD PENCIL x9</div>
+                            <div>SILVER PENCIL x5</div>
+                            <div>BRONZE PENCIL x5</div>
+                            <div>ONE SHOW MERIT x22</div>
+                            <div>ONE SHOW SPECIAL AWARD x1</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>BRITISH ARROWS</h4>
+                            <div>GRAND PRIX x1</div>
+                            <div>GOLD x11</div>
+                            <div>SILVER x6</div>
+                            <div>BRONZE x5</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>CLIO AWARDS</h4>
+                            <div>GOLD x4</div>
+                            <div>SILVER x12</div>
+                            <div>BRONZE x11</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>CAMPAIGN BIG</h4>
+                            <div>CAMPAIGN GOLD x5</div>
+                            <div>CAMPAIGN FINALIST x3</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>CREATIVE CIRCLE</h4>
+                            <div>GOLD OF GOLDS (GRAND PRIX) x1</div>
+                            <div>GOLD x5</div>
+                            <div>SILVER x3</div>
+                            <div>BRONZE x3</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>KINSALE SHARKS</h4>
+                            <div>GOLD x12</div>
+                            <div>SILVER x4</div>
+                            <div>BRONZE x3</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>LONDON INTERNATIONAL</h4>
+                            <div>WINNER x1</div>
+                            <div>GOLD x4</div>
+                            <div>SILVER x4</div>
+                            <div>BRONZE x2</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>NEW YORK FESTIVALS</h4>
+                            <div>GRAND PRIZE x1</div>
+                            <div>GOLD x7</div>
+                            <div>BRONZE x1</div>
+                            <div>FINALIST x4</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>THE WEBBY AWARDS</h4>
+                            <div>WINNER x3</div>
+                            <div>NOMINATION x1</div>
+                            <div>HONOUREE x8</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>EUROBEST</h4>
+                            <div>GRAND PRIX x1</div>
+                            <div>SILVER x2</div>
+                            <div>BRONZE x2</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>EPICA AWARDS</h4>
+                            <div>GOLD x1</div>
+                            <div>SILVER x8</div>
+                            <div>BRONZE x5</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>BIMA</h4>
+                            <div>WINNER x5</div>
+                            <div>FINALIST x3</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>SHOTS AWARDS</h4>
+                            <div>GOLD x1</div>
+                            <div>SILVER x3</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>MARKETING SOCIETY</h4>
+                            <div>GRAND PRIX x1</div>
+                            <div>WINNER x1</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>MOBIUS AWARDS</h4>
+                            <div>BEST IN SHOW x1</div>
+                            <div>GOLD x1</div>
+                        </div>
+
+                        <div class="about-awards-text">
+                            <h4>ADDITIONAL</h4>
+                            <div>ANDYS GOLD x1</div>
+                            <div>AME AWARDS GOLD x1</div>
+                            <div>MONTREUX GOLD x1</div>
+                            <div>ART DIRECTORS CLUB SILVER x1</div>
+                            <div>CICLOPE SILVER x1</div>
+                            <div>AICP WINNER x1</div>
+                            <div>APA EFFECTIVENESS WINNER x1</div>
+                            <div>THINKBOX WINNER x1</div>
+                            <div>IAB CREATIVE SHOWCASE WINNER x1</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-row">
+                <a href="https://www.linkedin.com/in/paul-k-6a1a54" target="_blank" class="contact-icon">
+                    <img src="assets/images/linkedin.svg" alt="LinkedIn" width="32" height="32">
+                </a>
+                <a href="/cdn-cgi/l/email-protection#1c6c7d697077727368685c7b717d7570327f7371" class="contact-icon">
+                    <img src="assets/images/email.svg" alt="Email" width="32" height="32">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-panel" id="personalPanel">
+        <div class="close-detail" onclick="closePersonal()">✕</div>
+        <div class="detail-container">
+            <h2 class="detail-title">Personal</h2>
+            <div class="detail-desc">A range of experimental R&D projects exploring emerging AI, music, and behavioural interfaces.</div>
+            <div class="grid-layout">
+                <div class="personal-card">
+                    <video autoplay muted loop playsinline><source src="assets/loops/obtran.mp4" type="video/mp4"></video>
+                    <span class="tag lime">Electronic vinyl imprint</span><br><br>
+                    <h3>Oblivious Transfer</h3>
+                    <p>An experimental vinyl label distributed by Clone, featuring comic inserts by artists including Jake Lunt Davies and Alice Bloomfield.</p>
+                    <a onclick="openDetail('oblivious')" class="personal-link">Listen</a>
+                </div>
+                <div class="personal-card">
+                    <video autoplay muted loop playsinline><source src="assets/loops/qanu.mp4" type="video/mp4"></video>
+                    <span class="tag purple">GEN AI SHORT FILM</span><br><br>
+                    <h3>QANU</h3>
+                    <p>Exploration in multi-model generative storytelling, including Midjourney, VEO, Kling and ElevenLabs.</p>
+                    <a href="#" class="personal-link">Watch QANU</a>
+                </div>
+                <div class="personal-card">
+                    <video autoplay muted loop playsinline><source src="assets/loops/cryptic.mp4" type="video/mp4"></video>
+                    <span class="tag orange">VIBE CODING</span><br><br>
+                    <h3>Cryptic Kitten</h3>
+                    <p>A web-based app created in one evening, to help new players become familiar with the techniques of cryptic crosswords.</p>
+                    <a href="#" class="personal-link">View Prototype</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-panel" id="detailPanel">
+        <div class="close-detail" onclick="closeDetail()">✕</div>
+        <div class="detail-container">
+            
+            <img id="panelLogo" class="project-logo" style="display: none;" src="" alt="Project Logo">
+
+            <div class="detail-video-wrapper" id="videoContainer"></div>
+            <div class="detail-meta" id="panelMeta">Client / Role</div>
+            <h2 class="detail-title" id="panelTitle">Project Title</h2>
+            
+            <div class="detail-desc" id="panelDesc">Description...</div>
+            
+            <div id="buyContainer" class="credits-container" style="display: none; border-top: none; margin-top: 30px;"></div>
+
+            <div id="creditsContainer"></div>
+            
+            <div id="projectAwardsContainer"></div>
+
+            <div id="extraImagesContainer" class="image-stack"></div>
+
+            <div id="fullWidthImgContainer"></div>
+
+            <div id="videoRowContainer" class="video-row" style="display: none;"></div>
+
+            <div id="extraVideosContainer"></div>
+
+            <div id="panelQuotes" style="display: none; margin-top: 40px;"></div>
+            
+            <div id="articleContainer" style="display: none;"></div>
+
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
+            <h1>Telekom x<br>Stranger Things</h1>
+            <p>How to weave a tech brand into Netflix's most watched show of all time.</p>
+            <div class="btn" onclick="openDetail('magentatv')">View Campaign</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/hm.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Film</span><span class="tag">Wes Anderson</span></div>
+            <h1>H&M /<br>Come Together</h1>
+            <p>A Wes Anderson winter tale that redefined the holiday blockbuster.</p>
+            <div class="btn" onclick="openDetail('hm')">Watch Film</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/johnlewis.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Brand Campaign</span><span class="tag">Partnership</span></div>
+            <h1>John Lewis /<br>Bohemian Rhapsody</h1>
+            <p>Transforming an ownership model into an emotional cinematic adventure.</p>
+            <div class="btn" onclick="openDetail('johnlewis')">View Campaign</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/fifa-tornado.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Gaming</span><span class="tag">Activation</span></div>
+            <h1>EA Sports /<br>More Than a Game</h1>
+            <p>The in-game skill move that spread like wildfire in the real world.</p>
+            <div class="btn" onclick="openDetail('fifa_tornado')">View Case</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/honda.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Interactive Film</span><span class="tag">Daniel Wolfe</span></div>
+            <h1>Honda /<br>The Other Side</h1>
+            <p>An interactive film innovation that revealed Honda's darker side.</p>
+            <div class="btn" onclick="openDetail('honda')">TYPE 'R'</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/vw-yourwagen.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Brand Platform</span><span class="tag">Documentary</span></div>
+            <h1>Volkswagen /<br>YourWagen</h1>
+            <p>Handing ownership of the brand back to the people who made it.</p>
+            <div class="btn" onclick="openDetail('vw_yourwagen')">Explore Stories</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/iams-waylon.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Activation</span><span class="tag">Health</span></div>
+            <h1>IAMS /<br>Waylon</h1>
+            <p>Making an invisible health crisis impossible to ignore.</p>
+            <div class="btn" onclick="openDetail('iams_waylon')">See Activation</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/garfield.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Partnership</span><span class="tag">Animation</span></div>
+            <h1>IAMS /<br>Garfield</h1>
+            <p>Putting a lazy pop-culture icon to work for a healthy cause.</p>
+            <div class="btn" onclick="openDetail('iams_garfield')">View Campaign</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ps5-edge.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Global Launch</span><span class="tag">Play Has No Limits</span></div>
+            <h1>PlayStation 5 /<br>The Edge</h1>
+            <p>A cinematic armada mythologising the dawn of a new era of play.</p>
+            <div class="btn" onclick="openDetail('ps5_edge')">View Campaign</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/vw-unseen.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Product Demo</span></div>
+            <h1>Volkswagen /<br>See the Unseen</h1>
+            <p>Selling safety technology through the visceral tension of a Hollywood thriller.</p>
+            <div class="btn" onclick="openDetail('vw_unseen')">Watch Film</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ps-wrong.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Campaign</span><span class="tag">Street Culture</span></div>
+            <h1>EA Sports /<br>Wrong Breaks New Ground</h1>
+            <p>Championing the gritty, rule-breaking creativity of street football subculture.</p>
+            <div class="btn" onclick="openDetail('fifa_wrong')">Play Wrong</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ps-battlefield.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">M. van Heijningen</span></div>
+            <h1>PlayStation x<br>Battlefield 6</h1>
+            <p>Deconstructing the chaos of war to showcase next-gen immersion.</p>
+            <div class="btn" onclick="openDetail('ps_battlefield')">Watch Spot</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/mercedes.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Branded Ent</span><span class="tag">Carl Erik Rinsch</span></div>
+            <h1>Mercedes-Benz /<br>Escape the Map</h1>
+            <p>Gamifying the test drive within a dystopian, glitching Google Street View.</p>
+            <div class="btn" onclick="openDetail('mercedes')">Watch Film</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/doritos.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Interactive Film</span><span class="tag">The Glue Society</span></div>
+            <h1>Doritos /<br>Dip Desperado</h1>
+            <p>Creating an absurd sporting mythology to ritualise the act of dipping.</p>
+            <div class="btn" onclick="openDetail('doritos')">View Case</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/google-loch.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Interactive</span><span class="tag">Street View</span></div>
+            <h1>Google Maps /<br>Loch Ness</h1>
+            <p>Reigniting a global mystery in the name of exploration</p>
+            <div class="btn" onclick="openDetail('google_loch')">Explore Loch</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/iams-ai.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">AI Innovation</span><span class="tag">Google Veo</span></div>
+            <h1>IAMS /<br>Puppy/Kitten Studios</h1>
+            <p>Harnessing generative AI to revolutionize pitching for a new family member.</p>
+            <div class="btn" onclick="openDetail('iams_ai')">Create Trailer</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ea-closer.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Cinematography</span></div>
+            <h1>PlayStation x<br>EAFC</h1>
+            <p>Innovative macro-cinematography that pulls players into the game's molecular detail.</p>
+            <div class="btn" onclick="openDetail('fc_closer')">Get Closer</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/virgin.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Integrated</span><span class="tag">Connectivity</span></div>
+            <h1>Virgin Media /<br>Faster Brings Us Closer</h1>
+            <p>Timeless tales retold for the digital age.</p>
+            <div class="btn" onclick="openDetail('virgin')">View Series</div>
+        </div>
+    </div>
+
+    <div class="project-slide">
+        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/capital.mp4" type="video/mp4"></video>
+        <div class="content">
+            <div class="tag-row"><span class="tag">Rebrand</span><span class="tag">Identity</span></div>
+            <h1>Capital Radio /<br>Rebrand</h1>
+            <p>Giving the nation's most popular radio station its mojo back.</p>
+            <div class="btn" onclick="openDetail('capital')">View Rebrand</div>
+        </div>
+    </div>
+
+    <div class="project-slide footer-slide">
+        <div class="footer-content">
+            <div id="footerGrid" class="index-grid">
+                </div>
+            <div class="footer-socials">
+                <a href="https://www.linkedin.com/in/paul-k-6a1a54" target="_blank" class="contact-icon">
+                    <img src="assets/images/linkedin.svg" alt="LinkedIn" width="32" height="32">
+                </a>
+                <a href="/cdn-cgi/l/email-protection#512130243d3a3f3e252511363c30383d7f323e3c" class="contact-icon">
+                    <img src="assets/images/email.svg" alt="Email" width="32" height="32">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        const projectData = {
+            oblivious: {
+                title: "Oblivious Transfer",
+                logo: "obtran-logo.png",
+                desc: "Oblivious Transfer is an electronic music imprint, launched 2022 as a collaborative hub for producers, artists, and programmers exploring sci-fi narratives, quantum theory, and cryptographic themes through narrative-driven EPs that blend physical vinyl, collectible inserts, and experimental film. Drawing inspiration from retro futurism, the label's releases span warped techno, reimagined 90s intelligent drum and bass, and psychedelic excursions, with productions handled at Devon Analogue Studios, mixing at ARC Mix London, and mastering by Matt Colton at Metropolis. Key producers are QNTM CTRL, Social Rhythm, With visual artists <a href='https://blackdogfilms.com/directors/alice-bloomfield' target='_blank' class='bio-link'>Alice Bloomfield</a>, <a href='https://jakelunt.com/' target='_blank' class='bio-link'>Jake Lunt Davies</a> (Star Wars), Anwot. <a href='https://epodart.com/' target='_blank' class='bio-link'>.EPOD</a>  and The Real Dill. With motion graphics from directors <a href='https://mayda.co/' target='_blank' class='bio-link'>Carl Addy</a> and <a href='https://www.motioncult.com/' target='_blank' class='bio-link'>Motioncult</a>.",
+                introStyle: "large",
+                imageLayout: "grid-gallery-2col",
+                // First 6 images in uniform grid
+                images: ["obtran-1.jpg", "obtran-2.jpg", "obtran-3.jpg", "obtran-4.jpg", "obtran-5.jpg", "obtran-1b.jpg"],
+                fullWidthImage: "obtran-6.jpg",
+                videoRow: [
+                    { id: "1149845187", h: "3bf5ed1a39", title: "Social promos <em>(Carl Addy)</em>" },
+                    { id: "1149845541", h: "43cc42f883", title: "AR unlocked by artwork <em>(Motioncult)</em>" }
+                    // Third video removed
+                ],
+                buyLinks: [
+                    { name: "Clone", url: "https://clone.nl/all/search?query=qntm+ctrl" },
+                    { name: "Boomkat", url: "https://boomkat.com/labels/oblivious-transfer" },
+                    { name: "Decks", url: "https://www.decks.de/decks/" }
+                ],
+                article: {
+                    title: "The new UK collective making and shaping the lines between Electronic music, physical and digital Art on the Blockchain: Oblivious Transfer",
+                    text: "<em>With a roster of artists who have coalesced around the themes of Quantum Theory, Sci-Fi, Rave alongside Cryptography from Otherworlds. Oblivious Transfer is a newly formed collective of makers and shapers, who have committed to producing their wares across multiple formats, embracing the possibilities offered by a new wave of technology that’s been emerging over the last few years.</em>\n\nEach release to date includes a record, collectible insert and NFTs – all designed to unpack a story intrinsically linked through music. After all, it’s at the very core of what they’re about.\n\nTo sum things up – Oblivious Transfer is best understood as a collaborative space where producers, artists and programmers can work closely together, to exchange of ideas about a theme for each EP until it unravels into an emerging story.\nWith so much going on in the Blockchain space and a wider discourse taking place about a whole new medium for creatives. It feels like we may well be on the verge of a moment of paradigm shift (if you’re to believe the hype). After hearing their first release by Qntm Ctrl – The Eagle And The Senses and loving the look of their artwork, we were keen to find out more.\n\n<strong>So, firstly tell us a bit about the project: what’s your background in music?</strong>\n\n“We’re a mix of electronic producers, film directors, artists and programmers who’ve grown up on rave culture and electronic music. From hosting 3,000-strong all-weekend warehouse parties in Berlin, to brutal 90hr weeks in audio post production, to long nights editing music promos, or conjuring up new patches for the Prophet 6, you could say that we all breathe (and sometimes choke!) on music.”\n\n<strong>Why did you choose to start a record label / art collective?</strong>\n\n“As a label, we’re fascinated by what post rave culture might sound and look like. Keeping one foot in the rave, where can we take it? It’s a pivotal time for music, where everything is about to change (all over again). The potential for re-inventing how we experience music culture has never been more exciting. Epic Games buying Bandcamp is just one recent example of where it might all go. The relationship between the physical artefact and virtual is getting super interesting. Think of fashion labels like RTFKT and The Fabricant who are leading the way. We haven’t even scratched the surface when it comes to music…”\n\n<strong>Who is involved so far?</strong>\n\n“In every aspect, we aim for the highest standard: from the productions (mostly undertaken at Devon Analogue Studios), the mixing at ARC Mix London to the mastering by Matt Colton at Metropolis, to the carefully crafted artwork, promos and NFTs. Each vinyl release includes collectible inserts, designed to unpack our narrative.\n\nThe QNTM CTRL artwork is by sci-fi concept artist, Jake Lund-Davies (Rogue One, The Last Jedi). The Social Rhythm EP is illustrated by London street artist The Real Dill, with exciting new work from counterculture exponents like .EPOD, Alice Bloomfield and Anwot incoming. In the virtual and motion graphic space, we’ve been working with directors Carl Addy, Francois Rousin and Motioncult to shape our output.”\n\n<strong>How do you operate as a collective then?</strong>\n\n“We’re working together to tell a story driven by the music. The technology that shaped us is being radically reshaped…so we’re rolling with it to see where it takes us. You could say it’s a kind of nostalgic futurism. OK, that sounds a little pretentious! But from Snow Crash to Minority Report – there are a ton of examples of sci-fi leapfrogging reality as we know it. That’s a shared philosophy. But on a more practical level, it means the producers, artists and programmers work closely together to exchange ideas on each EP, as its story emerges.”\n\n<strong>What sort of direction can we expect from you musically?</strong>\n\n“We like the idea of it flexing and evolving as we go. The first QNTM CTRL release was on a warped electronic tip, an escape from a burning planet. This was followed by Social Rhythm’s beautiful reimagining of 90s intelligent drum and bass, themed around an alien tribal ceremony. Coming soon is a psychedelic excursion reminiscent of the KLF and The Orb (with Ozrics-inspired keys) which takes a more gnostic turn.”\n\n<strong>Sci-Fi and Otherwordly Cryptography are also a heavy influence, who are your heroes and influences on that front?</strong>\n\n“So many, haha! Asimov, Philip K.Dick. William Gibson. All the cornerstones, like 2001 Space Odyssey, Dark Star, Blade Runner, Metropolis, The Day the Earth Stood Still, the Alien series, They Live and so on. Older stuff like 2000AD, Trigan Empire and Akira. Or more recently: Death, Love + Robots, Blomkamp’s Oat Studios acute weirdness and Adrian Tchaikovsky’s Children of Time.\n\nCryptography has of course been around since forever, in many different forms. There’s a great book by Simon Singh called The Code Bookthat tells its story. We’re most inspired by its application in storytelling. From ancient Egyptian hieroglyphics, through to ideas in the works of Edgar Alan Poe, Eco’s The Name of the Rose, Neal Stephenson’s virus-infected metaverse, or perhaps the simple genius of Aphex Twin hiding his face in a spectroscope image on [Equation]. The Gumball Lounge experience in VRChat on the Quest 2 is astonishing.” \n\n<strong>Are there any particular theories or ideas you subscribe to?</strong>\n\n“Oblivious Transfer was named after a cryptography protocol, whereby “a sender (Alice) transfers one of potentially many pieces of information to a receiver (Bob), but remains oblivious as to what piece (if any) has been transferred”. We thought this was a great analogy for how music and art is relayed and perceived. Intricate encoded puzzles with/out purpose. Who is the intended recipient? How is the energy exchanged? It was a term that began to make sense of how we could put our releases out. That said, we have no f*&^n clue who Alice and Bob are…”\n\n<strong>What’s the most powerful Cryptography you’ve experienced so far?</strong>\n\n“Surely DNA itself? After having recent DNA scan results for both health and ancestry, seeing the results was wild. If studies to convert DNA into an adaptive storage format are successful, it will hold 10 zetabytes in a tiny device the size of a shoebox, capable of lasting a million years… imagine what treasures we could hide in there for people to discover?”\n\n<strong>Blockchain, digital art and NFTs are a BIG topic right now. Tell us more about the space and how you see it…</strong>\n\n“The applications of digital ownership via the blockchain are in their infancy. But that’s what makes it so exciting. Sadly, the whole subject gets conflated with crypto, tech bros, connotations of the wild west, money laundering and shady puppeteers at play. But the get-rich-quick ponzi schemes aren’t where the creative potential lies. There’s a lot of fun to be had with the concept of digital collectibles, enabled by (relatively) robust proof of possession. There’s exciting new ways to link real and virtual art of all kinds. Then, perhaps the biggest shift will be the idea of the spatial web (or metaverse-to-be), which takes us from scrolling to ‘strolling’. What should the experience of music in 3D spaces be? Definitely not Spotify. Mad times…”\n\n<strong>How do NFTs work and how do you see the technology/medium evolving?</strong>\n\n“There’s a lot of NFT-related information out there, mostly hype built around greed. Discord (when not being used as a scamming tool) is probably the best platform for getting deeper into all things non-fungible. There are still many format challenges to work out. But for Oblivious Transfer, NFTs give us a way to create limited edition virtual art, linked to the purchase of our vinyl artefacts (physical EPs). Over time, the plan is to mint not only collectible virtual characters (based on each EP’s comic narratives), but also exclusive tracks and bespoke sample packs. The NFTs become a form of long term access to our label, and will act as tickets to future events, limited edition collabs and so forth…”\n\n<strong>What sort of advice do you have for other artists/labels looking to start their journey?</strong>\n\n“As Oblivious Transfer, we’re only just starting ours, so let’s catch up in a year from now. But we plan to work hard, stay true to the concept, adapt quickly to the technology that’s out there, and keep having fun doing it!”\n\n<strong>Last but not least… what projects are you working on next?</strong>\n\n“There are next level follow-up EPs from QNTM CTRL and Social Rhythm being pressed as we speak. We’re finishing up our collection of NFTS linked to the first five releases.  We’re also planning an art exhibition of works from our collective (both real and virtual) for later in the year, that will take the form of a sound installation/party. Plus there’s talk of setting up a VR home for the label in the “metaverse” and a limited run of Oblivious Transfer tequila, probably in that order. Watch this space!”"
+                }
+            },
+            // ... (rest of projectData)
+            magentatv: {
+                title: "Telekom x Stranger Things",
+                meta: "Deutsche Telekom / adam&eveDDB",
+                desc: "Telekom’s Magenta TV was positioned not just as a next gen streaming aggregator, but as a curator of entertainment culture, authentically integrating into the fandom's most beloved universe. Working closely with series creators, the Duffer brothers, the campaign became an unparalleled brand partnership with the most watched TV series in Netflix history. Sadly, we never managed to coax any spoilers from the cast.",
+                vimeoId: "1148416720?h=a46cfe944f",
+                credits: [
+                    "DIRECTOR: NICK BALL",
+                    "PRODUCTION COMPANY: MJZ/ANORAK",
+                    "CREATIVES: MIKE KENNEDY, PAULINE ASHFORD",
+                    "SOUND DESIGN: SINE"
+                ],
+                quotes: [
+                    { text: "“A masterclass in how to leverage a partnership.”", logo: "drum.png" },
+                    { text: "“Nostalgia marketing done exactly right.”", logo: "adweek.png" }
+                ]
+            },
+            hm: {
+                title: "H&M / Come Together",
+                meta: "H&M / adam&eveDDB",
+                desc: "A seasonal retail push was elevated into a cinematic cultural event, leveraging auteur storytelling to cut through holiday clutter with emotional resonance. The film permeated culture around the world, with Anderson adding the film to his official canon of work on IMDB.  He wore a very nice suit.",
+                vimeoId: "1148422347?h=231ee5210c",
+                credits: [
+                    "DIRECTOR: WES ANDERSON",
+                    "PRODUCTION COMPANY: RIFF RAFF FILMS / THE DIRECTORS BUREAU",
+                    "CINEMATOGRAPHY: BRUNO DELBONNEL",
+                    "CREATIVES: PAUL KNOTT, TILL DIESTEL, TIM VANCE"
+                ],
+                projectAwards: [
+                    "British Arrows Gold, Branded Entertainment",
+                    "British Arrows Gold, Production Design",
+                    "Creative Circle Silver, Best Direction",
+                    "Creative Circle Bronze, Best Online Advertising Film (over 1 minute)",
+                    "The One Show Merit, Branded Entertainment: Short Form",
+                    "The One Show Merit, Moving Image Craft: Art Direction",
+                    "Cannes Lions Bronze, Film",
+                    "Cannes LIons Bronze, Film Craft",
+                    "The Thinkboxes Award, Top TV Ad (Shortlisted)",
+                    "The Drum's World's Best Ads Ever, Ranked #92",
+                    "Campaign Magazine, Pick of the Week"
+                ],
+                quotes: [
+                    { text: "“Full of Anderson's beloved visual quirks”", logo: "dazed.png" },
+                    { text: "“Oozes Anderson's signature cinematic style”", logo: "creativereview.png" },
+                    { text: "“Perfectly scored”", logo: "rollingstone.png" }
+                ]
+            },
+            johnlewis: {
+                title: "John Lewis / Bohemian Rhapsody",
+                meta: "John Lewis & Partners / adam&eveDDB",
+                desc: "A brand relaunch of this scale needed to humanise the partnership model, shifting focus from corporate structure to the shared passion and creativity.  Every employee a vested partner in making the campaign the best it could be. The film led the charge in an entire overhaul of the joint Waitrose and John Lewis partnership.",
+                vimeoId: "1148423881?h=c012131381",
+                credits: [
+                    "DIRECTOR: DOUGAL WILSON",
+                    "PRODUCTION COMPANY: BLINK PRODUCTIONS",
+                    "CINEMATOGRAPHY: LINUS SANDGREN",
+                    "SOUND DESIGN: ANTHONY MOORE (FACTORY)",
+                    "CREATIVES: PAUL KNOTT, TIM VANCE"
+                ],
+                projectAwards: [
+                    "Cannes Silver Lion, Retail",
+                    "Cannes Silver Lion, Production Design / Art Direction",
+                    "Cannes Silver Lion, Use of Licensed / Adapted Music",
+                    "Cannes Bronze Lion, Direction",
+                    "Cannes Bronze Lion, Entertainment for Music",
+                    "Cannes Bronze Lion, Direct",
+                    "Cannes Bronze Lion, Retail",
+                    "One Show Bronze, Television & VOD / Long Form",
+                    "One Show Bronze, Cinema Advertising",
+                    "Clios Silver, Music",
+                    "Clios Silver, Innovation",
+                    "Clios Silver, Film Technique (Direction)",
+                    "D&AD Graphite Pencil, Brand Expression in Moving Image",
+                    "Thinkbox Winner, TV Ad Creativity",
+                    "British Arrows Gold, Re-Record (Craft)",
+                    "Kinsale Gold, Best Sound Mixing",
+                    "Creative Circle Gold, Best Sound Design",
+                    "LIAA Winner, Sound Editing"
+                ],
+                quotes: [
+                    { text: "“A stark, beautiful departure for the retailer.”", logo: "campaign.png" },
+                    { text: "“Charming, funny, and distinctly John Lewis.”", logo: "creativereview.png" }
+                ]
+            },
+            fifa_tornado: {
+                title: "EA Sports / More Than a Game",
+                meta: "EA Sports / adam&eveDDB",
+                desc: "A skill move hidden in the FIFA game reversed the flow of influence between virtual and physical sport, proving that gaming has the power to dictate real-world football culture rather than just imitate it. The campaign broke all franchise records with a 20% increase in new players, with Ronaldo performing the move for real on the world’s biggest stage.",
+                vimeoId: "1148418320?h=1a6257fd67",
+                credits: [
+                    "DIRECTOR: ADAM BERG",
+                    "PRODUCTION COMPANY: SMUGGLER",
+                    "VFX: THE MILL",
+                    "CREATIVES: JONAS ROTH, RASMAS SMITH BECH"
+                ],
+                projectAwards: [
+                    "Cannes Lions Gold, Entertainment",
+                    "Cannes Lions Gold, Social & Influencer Leisure",
+                    "Cannes Lions Silver, Brand Experience & Activation",
+                    "Cannes Lions Silver, Social & Influencer",
+                    "Cannes Lions Bronze, Brand Experience & Activation",
+                    "Cannes Lions Bronze, Direct Co-creation",
+                    "British Arrows Gold, Integrated",
+                    "British Arrows Silver, Computer Games & Toys",
+                    "British Arrows Silver, Original Composition",
+                    "British Arrows Silver, Sound Design",
+                    "British Arrows Bronze, Best over 90s Commercial",
+                    "British Arrows Bronze, Best over 60 and up to & including 90s Commercial",
+                    "One Show Gold, Gaming",
+                    "One Show Gold, Influencer Marketing / Multi-Channel",
+                    "One Show Merit, Social Engagement / User-Generated Content",
+                    "One Show Merit, Social Post / Series",
+                    "One Show Merit, Innovation in Social Media"
+                ],
+                quotes: [
+                    { text: "“The bridge between gaming and reality has never been blurrier.”", logo: "hypebeast.png" },
+                    { text: "“EA Sports just invented a football move.”", logo: "fourfourtwo.png" },
+                    { text: "“Fierce”", logo: "espn.png" }
+                ]
+            },
+            vw_yourwagen: {
+                title: "Volkswagen / YourWagen",
+                meta: "Volkswagen / adam&eveDDB",
+                desc: "We reignited authentic brand love, with a new global platform that reminded the world that “Without the Volks, there is no Wagen” shifting ownership of the brand narrative from the manufacturer to the diverse community of drivers who live with the cars.",
+                vimeoId: "1148424654?h=441434cea8",
+                credits: [
+                    "PLANNING DIRECTOR: JACK SPICER",
+                    "DIRECTORS: CHRIST TURNER, FINN MCGOUGH",
+                    "PRODUCTION COMPANY: DARK ENERGY FILMS",
+                    "CREATIVES: MOLLY JOHNSTONE, CHLOE POPE",
+                    "SOUND DESIGN: SINE"
+                ],
+                quotes: [
+                    { text: "“A love letter to the people behind the wheel.”", logo: "marketingweek.png" },
+                    { text: "“Heartwarming, authentic, and undeniably diverse.”", logo: "drum.png" }
+                ],
+                extraVideos: [
+                    { title: "Luke's Story", vimeoId: "1148614535?h=dc7cfae60a" },
+                    { title: "Erum's Story", vimeoId: "1148632763" } 
+                ]
+            },
+            iams_waylon: {
+                title: "IAMS / Waylon",
+                meta: "IAMS / adam&eveDDB",
+                desc: "To disrupt a cluttered category, we engineered a high-visibility stunt that visualised the invisible burden of pet obesity, turning a dry statistic into an undeniable cultural conversation, which found its way onto a two minute insert on Good Morning America, reaching millions.",
+                vimeoId: "1148617461?h=4a1d577b05",
+                credits: [
+                    "CREATIVES: MIKE WHITESIDE, BEN ROBINSON",
+                    "DIRECTOR: THE GLUE SOCIETY",
+                    "PRODUCTION COMPANY: BISCUIT FILMWORKS",
+                    "POST PRODUCTION: ABSOLUTE POST"
+                ],
+                projectAwards: [
+                    "ANDYS, Gold",
+                    "AICP, Experiential, Winner",
+                    "APA Effectiveness Winner 2025",
+                    "Ciclope, Silver, Live Experiences",
+                    "D&AD, Wood Pencil, Media",
+                    "Creative Circle, Gold, Experience",
+                    "Creative Circle, Bronze, Experience",
+                    "Clios, Silver, PR",
+                    "Clios, Bronze, PR",
+                    "The One Show, Bronze, PR",
+                    "Creative Review Annual, Shortlist, Experiential"
+                ],
+                quotes: [
+                    { text: "“A parade float with a heavy message.”", logo: "adage.png" },
+                    { text: "“IAMS stops the show to start a conversation.”", logo: "lbb.png" }
+                ],
+                images: ["waylon-1.jpg", "waylon-2.jpg", "waylon-3.jpg", "waylon-4.jpg"]
+            },
+            iams_garfield: {
+                title: "IAMS / Garfield",
+                meta: "IAMS / adam&eveDDB",
+                desc: "A national campaign aimed at raising awareness for the critical issue of overweight cats in the U.S. by partnering with the world's most famous overweight cat, Garfield. The campaign promotes IAMS Healthy Weight Dry Cat Food, the brand’s latest product innovation, formulated to help cats lose weight in two months. Destigmatizing pet obesity by leveraging the world's most famous fat cat, turning a negative health conversation into an engaging, solution-oriented narrative.",
+                vimeoId: "1148923052?h=4a879c030b",
+                credits: [
+                    "CREATIVES: MIKE WHITESIDE, BEN ROBINSON",
+                    "DIRECTORS: FREDDIE POWELL, OLIE BEALE",
+                    "PRODUCTION COMPANY: DROOL",
+                    "PARTNERS: PARAMOUNT ENTERTAINMENT"
+                ],
+                quotes: [
+                    { text: "“A perfect pairing of product and pop culture.”", logo: "adweek.png" },
+                    { text: "“Garfield’s diet is the marketing collaboration we needed.”", logo: "creativereview.png" }
+                ],
+                images: ["garfield-1.jpg", "garfield-2.jpg"]
+            },
+            ps5_edge: {
+                title: "PlayStation 5 / The Edge",
+                meta: "PlayStation 5 / adam&eveDDB",
+                desc: "This was the masterbrand launch spot for the new “Play has no Limits” brand platform for PlayStation 5. Mythologizing the technological leap of the new console, we framed the launch not as a hardware release but as a journey into the uncharted frontiers of immersion.",
+                vimeoId: "1148603798?h=35a3981494",
+                credits: [
+                    "DIRECTOR: NICOLAI FUGLSIG",
+                    "PRODUCTION COMPANY: MJZ",
+                    "VFX: UNTOLD",
+                    "CREATIVES: PAUL KNOTT, TIM VANCE"
+                ],
+                quotes: [
+                    { text: "“Epic, mysterious, and undeniably PlayStation.”", logo: "ign.png" },
+                    { text: "“Captures the raw excitement of the next generation.”", logo: "variety.png" }
+                ]
+            },
+            vw_unseen: {
+                title: "Volkswagen / See the Unseen",
+                meta: "Volkswagen / adam&eveDDB",
+                desc: "Selling safety technology not through dry specs, but by visceral storytelling that highlights the emotional value of seeing danger before it strikes.",
+                vimeoId: "1148882056",
+                credits: [
+                    "DIRECTOR: NICLAS LARSSON",
+                    "PRODUCTION COMPANY: NEW-LAND",
+                    "CINEMATOGRAPHY: LINUS SANDGREN",
+                    "SOUND DESIGN: FACTORY"
+                ],
+                projectAwards: [
+                    "British Arrows Silver, Automotive",
+                    "British Arrows Silver, Craft / Cinematography",
+                    "One Show Silver Pencil, Music & Sound Craft / Sound Editing",
+                    "Clio Bronze, Sound Design"
+                ],
+                quotes: [
+                    { text: "“A thriller in 60 seconds.”", logo: "shots.png" },
+                    { text: "“Beautifully tense storytelling.”", logo: "davidreviews.png" }
+                ]
+            },
+            honda: {
+                title: "Honda / The Other Side",
+                meta: "Honda / Wieden+Kennedy",
+                desc: "This campaign represented a bold shift in automotive advertising by leveraging interactive digital technology to showcase the dual personality of the Honda Civic Type R, a family-friendly vehicle by day and a high-performance thrill machine by night. Directed by Daniel Wolfe, the campaign featured a groundbreaking interactive YouTube video where viewers could press \"R\" on their keyboards to toggle between two parallel narratives: a mundane school run and an adrenaline-fueled heist. This innovative mechanic not only engaged audiences but also embodied Honda's brand ethos of engineering excellence and \"racing spirit,\" drawing from the company's heritage in motorsports. The film, clocking in at over three minutes, was meticulously crafted with seamless syncing in visuals, sound, and pacing, making it a technical marvel that resonated globally. It garnered millions of views and became a benchmark for branded content, influencing subsequent interactive ads in the industry.",
+                vimeoId: "1148882792?h=f82c1757f6",
+                credits: [
+                    "DIRECTOR: DANIEL WOLFE",
+                    "PRODUCTION COMPANY: SOMESUCH / STINK DIGITAL",
+                    "VFX: THE MILL"
+                ],
+                projectAwards: [
+                    "Cannes Gold Lion, Film",
+                    "Cannes Gold Lion, Cyber (Interactive Video)",
+                    "Cannes Gold Lion, Film Craft (Direction)",
+                    "Cannes Gold Lion, Film Craft (Sound Design)",
+                    "Cannes Silver Lion, Cyber (Brand Tech/Storytelling)",
+                    "Cannes Silver Lion, Film Craft (Editing)",
+                    "Cannes Silver Lion, Cyber (Use of Music/Sound Design)",
+                    "Cannes Gold Lion, Cyber (Craft: Storytelling)",
+                    "Cannes Shortlist, Titanium and Integrated Lions",
+                    "D&AD Yellow Pencil, Digital Marketing",
+                    "D&AD Yellow Pencil, Film Advertising Crafts (Direction for Film Advertising)",
+                    "D&AD Graphite Pencil, Digital Design (Sound Design & Use of Music)",
+                    "D&AD Graphite Pencil, Digital Marketing (Online Video)",
+                    "D&AD Wood Pencil, Editing for Film Advertising",
+                    "D&AD Wood Pencil, Sound Design in Film Advertising",
+                    "D&AD Yellow Pencil, Branded Film Content & Entertainment",
+                    "The One Show Gold Pencil, Interactive (Online Films & Video)",
+                    "The One Show Gold Pencil, Interactive (User Experience/UX)",
+                    "The One Show Merit, Innovation in Video",
+                    "The One Show Special Award, Automobile Advertising of the Year",
+                    "The One Show Gold Pencil, Websites / Automotive Products & Services",
+                    "The One Show Gold Pencil, Branded Entertainment",
+                    "The One Show Merit, Interactive Craft & Sound Design",
+                    "British Arrows Gold, Interactive Web-Based Commercial",
+                    "British Arrows Gold, Best Web-Based Film (Over 90 Seconds)",
+                    "British Arrows Gold, Best Achievement in Production",
+                    "British Arrows Gold (Craft), Best Sound Design",
+                    "British Arrows Gold (Craft), Best Colourist",
+                    "British Arrows Top Prize, Commercial of the Year (Grand Prix Equivalent)",
+                    "Creative Circle Gold of Golds, Best in Show",
+                    "Creative Circle Gold, Best Film",
+                    "Creative Circle Gold, Best Digital",
+                    "Creative Circle Gold, Best Innovation",
+                    "Clio Gold, Digital/Mobile",
+                    "Clio Silver, Film Technique (Direction)",
+                    "Clio Silver, Film Technique (Editing)",
+                    "Clio Silver, Film Technique (Sound Design)",
+                    "Clio Gold, Sound Design in Digital",
+                    "Clio Silver, Sound Design in Film",
+                    "Webby Winner, Best Use of Interactive Video",
+                    "Webby Honoree, Best Navigation/Structure",
+                    "Campaign Big Gold, Automotive (Digital)",
+                    "LIA Gold, Digital (Innovative Use)",
+                    "LIA Gold, Integration/Multi-Platform",
+                    "LIA Gold, Sound Design",
+                    "Eurobest Grand Prix, Interactive",
+                    "New York Festivals Grand Prize, Digital Sound Design",
+                    "New York Festivals Gold, Film Craft",
+                    "Shots Gold, Digital Campaign",
+                    "Shots Silver, Branded Content of the Year",
+                    "Shots Silver, Best Use of Sound Design",
+                    "Shots Silver, Online Film of the Year",
+                    "Kinsale Shark Silver, Best Use of Sound Design",
+                    "Auto Express Winner, Advertising Campaign of the Year",
+                    "IAB Creative Showcase Winner, October (Pre-Launch Creativity)"
+                ],
+                quotes: [
+                    { text: "“The coolest car ad of the year”", logo: "fastcompany.png" },
+                    { text: "“Well, this might just blow your damn mind.”", logo: "adweek.png" }
+                ],
+                images: [
+                    { src: "honda-1.JPG", caption: "The head-scratching dual storyboard taking shape" },
+                    "honda-1b.jpg",
+                    "honda-2.png",
+                    "honda-3.png"
+                ]
+            },
+            fifa_wrong: {
+                title: "EA Sports / Wrong Breaks New Ground",
+                meta: "EA Sports / adam&eveDDB",
+                desc: "To launch the new street football mode in the game, we used the subculture of street football to frame \"rule-breaking\" as the highest form of creativity, aligning the brand with the maverick spirit of the player. We worked with Little Simz to add cadence and credibility to the story.",
+                vimeoId: "1148883685?h=c094f560e0",
+                credits: [
+                    "CREATIVES: RICHARD GAYTON, DARREN BERESFORD",
+                    "DIRECTOR: YANN DEMANGE",
+                    "VFX: THE MILL"
+                ],
+                quotes: [
+                    { text: "“An ode to the beautiful game's gritty side.”", logo: "complex.png" },
+                    { text: "“FIFA gets back to the streets.”", logo: "versus.png" }
+                ]
+            },
+            ps_battlefield: {
+                title: "PlayStation x Battlefield 6",
+                meta: "PlayStation / adam&eveDDB",
+                desc: "Illustrating the sensory overload of next-gen gaming by deconstructing the chaos, proving that every frame of the experience is crafted with cinematic fidelity.",
+                vimeoId: "1148884761?h=450664d63a",
+                credits: [
+                    "DIRECTOR: MATTHIJS VAN HEIJNINGEN JR.",
+                    "PRODUCTION COMPANY: MJZ",
+                    "VFX: SELECTED WORKS",
+                    "SOUND: SINE"
+                ],
+                quotes: [
+                    { text: "“A visceral breakdown of war.”", logo: "gamespot.png" },
+                    { text: "“Stunningly chaotic.”", logo: "kotaku.png" }
+                ]
+            },
+            mercedes: {
+                title: "Mercedes-Benz / Escape the Map",
+                meta: "Mercedes-Benz / AMV BBDO",
+                desc: "An interactive film that set out to gamify the test-drive experience to engage a younger demographic, merging high-end automotive allure with surreal, interactive storytelling.",
+                vimeoId: "12345678",
+                credits: [
+                    "PRODUCTION COMPANY: RSA",
+                    "INTERACTIVE DIRECTOR: ROB CORRADI (UNIT9)",
+                    "CREATIVES: PAUL KNOTT, TIM VANCE"
+                ],
+                projectAwards: [
+                    "One Show Gold - Branded content",
+                    "BIMA Winner - Integrated",
+                    "Cannes Bronze Lion - Branded Entertainment",
+                    "Cannes Bronze Lion - Film Direction",
+                    "Marketing Society Grand Prix",
+                    "Marketing Society Best Digitally-led",
+                    "Kinsale Gold - Campaign Websites",
+                    "Kinsale Gold - Online Film",
+                    "Kinsale Gold - Animation",
+                    "Kinsale Silver - Sound Design",
+                    "Epica Bronze - Interactive",
+                    "D&AD Wood - Film / Visual Effects",
+                    "D&AD Wood - Film / Sound Design",
+                    "D&AD Wood - Film / Direction",
+                    "Mobius Awards Best in Show",
+                    "Mobius Awards Gold",
+                    "Advertising Marketing Effectiveness Gold",
+                    "Clio Bronze - Games"
+                ],
+                quotes: [
+                    { text: "“Google Street View gone wrong.”", logo: "theverge.png" },
+                    { text: "“Interactive storytelling at its finest.”", logo: "wired.png" }
+                ],
+                article: {
+                    logo: "campaign.png",
+                    title: "AMV BBDO puts Mercedes on the map in chilling tale",
+                    text: "<em>The agency's latest campaign can perhaps best be described as Street View on acid. Paul Knott explains the thinking behind it.</em>\n\nIt's a tough and ambitious brief for Mercedes-Benz. How do you engage younger audiences by giving them the visceral sense of excitement they'd feel if they drove a Mercedes? To crack it, we wanted to do something completely different.\n\nGoogle Maps is a fascinating, inherently \"first person\" application that totally blew people's minds when it was launched, so it seemed like the obvious place to start. Having successfully seen its potential with campaigns for Guinness and The Economist, we believed the idea of bringing a computer world - inspired by Street View - to life through an interactive film was the way to go.\n\nThe script we sent to Carl Erik Rinsch was about helping a trapped girl to escape a photographic maze. The idea of a dystopian map world proved to be fertile and intriguing to explore. We wanted it to have elements of a strange, beguiling thriller. A place where people worship a giant compass like a god. There's a sun that never sets. The buildings are always rescaling. Characters get caught in glitches and moments in time are juxtaposed.\n\nFor the campaign as whole, the idea was to blur the distinction between the real and virtual, by using a combination of print, TV and digital media. To tell the story of our trapped girl in full, we started with a mobile augmented reality plea for help, triggered using the print and outdoor ads. A hash tag enabled dual-screen viewing. This, along with a movie-trailer-style TV spot, led to the campaign site.\n\nAs it's a first-person film, we wanted to give participants the opportunity to converse with the character as if she were real. There were also lots of ideas that we simply couldn't afford to shoot and Twitter was a great medium to get these across, helping to build her backstory. After you've helped her to escape the map, she calls you up on your actual mobile phone to say thanks. We plan to complete the campaign in the new year with her delivering the car to our overall winner.\n\nTo build our world, Carl's approach was to use photogrammetry (mapping 3D shapes from 2D images). It's deliberately not glossy, full CG. This worked out well for the imperfections we were trying to emulate. As a result of going down this route, we could set the story almost anywhere. The varied streets of Hong Kong, with its colourful signage and expansive cityscapes, suited the idea well. It's a little like the film Jumpers, in that you can be easily transported to the opposite side of the globe in a flash, just by using the search bar.\n\nThe sense that you're in some kind of weird fever dream was conveyed through the jump cuts, blurred faces and trippy dialogue. You could say it has elements of Inception and The Matrix to it but, hopefully, we've managed to create something a little different for a car campaign. There were lots of discussions between us and the team at Mercedes around how interactive to make the film itself. In the end, we all decided to keep it really simple and undemanding to get through. People just don't have time to spend ages working through puzzles and we wanted it to have as broad a reach as possible.\n\nMusic and sound design was always going to be important in setting the tone for this world. Carl called on 11:59 (comprising the Oscar-winner Atticus Ross, Leo Ross and Claudia Sarne) to produce a tension-laden theme with touches of real beauty. The sound design team at Factory then crafted some great atmospheric effects that really brought the digital glitches of the world to life.\n\nAll credit to Carl and the wizards at Digital Domain in Los Angeles for essentially rebuilding our very own version of Street View from the ground up, using hundreds of photographs of Hong Kong. As it turned out, everything in the final film was CG, except for the people and the interior of the car. And, strangely enough, in the process of shooting the \"real bits\" of the campaign while in Los Angeles, we were captured by the Google camera car...twice."
+                }
+            },
+            doritos: {
+                title: "Doritos / Dip Desperado",
+                meta: "Doritos / AMV BBDO",
+                desc: "To re-establish the product ritual of dipping chips, we went for an absurd mythology, creating a culturally sticky character that made the act of dipping feel iconic and entertaining.",
+                vimeoId: "1148883081?h=3092895187",
+                credits: [
+                    "DIRECTOR: THE GLUE SOCIETY (GARY FREEDMAN)",
+                    "PRODUCTION COMPANY: INDEPENDENT",
+                    "CREATIVES: PRABS WIGNARAJAH, JEZ TRIBE, TIM VANCE"
+                ],
+                projectAwards: [
+                    "Cannes Gold Lion Film",
+                    "D&AD Yellow Pencil Film Craft",
+                    "Cannes Bronze Lion Film Direction",
+                    "One Show Gold Branded Content Cinema",
+                    "One Show Silver Long Form",
+                    "Clio Gold Film Direction",
+                    "Clio Bronze Original Music",
+                    "Clio Bronze Online Film",
+                    "Clio Bronze Editing",
+                    "New York Festivals Gold Direction",
+                    "New York Festivals Gold Acting",
+                    "Montreux Awards Gold Cinema",
+                    "Webby Honoree Branded Entertainment",
+                    "Kinsale Gold - Cinema",
+                    "Kinsale Gold - Direction"
+                ],
+                quotes: [
+                    { text: "“The funniest spot of the year.”", logo: "campaign.png" },
+                    { text: "“Pure, unadulterated fun.”", logo: "thesun.png" }
+                ]
+            },
+            google_loch: {
+                title: "Google Maps / Loch Ness",
+                meta: "Google Maps / adam&eveDDB",
+                desc: "To capture that world’s imagination we applied the technology of Street View to a whimsical global mystery, proving the tool's capacity for wonder and exploration of all kinds.",
+                vimeoId: "125670086",
+                credits: [
+                    "DIRECTOR: NICK RUTTER",
+                    "GOOGLE CREATIVE DIRECTOR: GRAEME HALL"
+                ],
+                quotes: [
+                    { text: "“Google takes Street View to deep new places.”", logo: "time.png" },
+                    { text: "“The search for Nessie just got a high-tech upgrade.”", logo: "cnn.png" }
+                ]
+            },
+            iams_ai: {
+                title: "IAMS / Puppy & Kitten Studios",
+                meta: "IAMS / adam&eveDDB",
+                desc: "An experiment in modernising the adoption process by leveraging AI to solve a specific barrier—the lack of film making skills in the average wannabe pet parent pitching for a new family member. Tech innovation turned into emotional connection, not to be taken too seriously.",
+                vimeoId: "12345678",
+                credits: [
+                    "TECHNICAL PRODUCER: FRAZER HURRELL",
+                    "CREATIVES: CHARLOTTE UPTON, CALLUM MCDONALD"
+                ],
+                quotes: [
+                    { text: "“AI with a heart.”", logo: "trendhunter.png" },
+                    { text: "“Giving shelter pets the Hollywood treatment.”", logo: "springwise.png" }
+                ]
+            },
+            fc_closer: {
+                title: "PlayStation x EAFC / Play Closer",
+                meta: "EA Sports FC / adam&eveDDB",
+                desc: "Through a thrilling hybrid workflow incorporating CG and macro cinematography, we used playful intimacy to sell the advanced fidelity of the new game engine.",
+                vimeoId: "1148427184?h=9d8f7fd531",
+                credits: [
+                    "DIRECTOR: CARL ADDY",
+                    "PRODUCTION COMPANY: THE MAYDA CREATIVE CO.",
+                    "SOUND DESIGN: SINE"
+                ],
+                quotes: [
+                    { text: "“You’ve never seen the game this close.”", logo: "fourfourtwo.png" },
+                    { text: "“A visual feast for football fans.”", logo: "hypebeast.png" }
+                ]
+            },
+            virgin: {
+                title: "Virgin Media / Faster Brings Us Closer",
+                meta: "Virgin Media / adam&eveDDB",
+                desc: "In a trilogy of timeless stories retold for the digital age, we shifted the narrative from \"speed\" as a utility to \"speed\" as a facilitator of emotional connection, grounding technical claims in relatable human stories.",
+                vimeoId: "1148926803?h=05bdac7e87",
+                credits: [
+                    "CREATIVES: XANDER HART, EDWARD USHER",
+                    "DIRECTOR: FREDERIC PLANCHON",
+                    "PRODUCTION COMPANY: ACADEMY FILMS",
+                    "SOUND DESIGN: 750MPH"
+                ],
+                quotes: [
+                    { text: "“A touching look at modern love.”", logo: "theguardian.png" },
+                    { text: "“Storytelling that connects.”", logo: "campaign.png" }
+                ]
+            },
+            capital: {
+                title: "Capital Radio / Rebranding for convergence",
+                meta: "Capital FM / Global Radio",
+                desc: "Breathing new life into the nation’s most popular music station, the rebrand centred on a dynamic, adaptable logo system, drawing on bold, striking colours and fresh photography to create a more vibrant, flexible visual identity befitting of a multi-platform entertainment giant. Launched at the Jingle Bell Ball, the UK’s biggest annual Christmas party, the new identity rolled out across broadcast, digital, social, outdoor and live events. The transformation unlocked further branding projects across Global Radio’s wider portfolio.",
+                images: ["capital.webp"]
+            }
+        };
+
+        // Populate Footer Index (Alphabetical)
+        window.onload = () => {
+            const footerGrid = document.getElementById('footerGrid');
+            const sortedKeys = Object.keys(projectData).sort((a, b) => {
+                // If special handling is needed for 'oblivious' (not shown in footer), filter it out
+                // For now, let's keep all keys except 'oblivious' if desired, or include it.
+                // Assuming Oblivious is "Personal" and shouldn't be in the main work index:
+                if (a === 'oblivious') return 1; 
+                if (b === 'oblivious') return -1;
+                return projectData[a].title.localeCompare(projectData[b].title);
+            });
+
+            sortedKeys.forEach(key => {
+                // Skip 'oblivious' for the main work index footer
+                if(key === 'oblivious') return;
+
+                const link = document.createElement('a');
+                link.className = 'index-item';
+                // Convert slash to Line Break for clean layout in index
+                link.innerHTML = projectData[key].title.replace(" / ", "<br>"); 
+                link.onclick = () => openDetail(key);
+                footerGrid.appendChild(link);
+            });
+            
+            // Console check to ensure script loaded
+            console.log('Portfolio initialized');
+        };
+
+        // ARROW KEY NAVIGATION
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "ArrowDown") {
+                window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+            } else if (e.key === "ArrowUp") {
+                window.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+            }
+        });
+
+        function toggleMenu() {
+            const overlay = document.getElementById('overlay');
+            const burger = document.querySelector('.burger');
+            overlay.classList.toggle('active');
+            burger.classList.toggle('active');
+        }
+        function closeMenu() {
+            document.getElementById('overlay').classList.remove('active');
+            document.querySelector('.burger').classList.remove('active');
+        }
+
+        function openAbout() { 
+            closeMenu(); 
+            // Close personal panel if open to prevent stacking
+            document.getElementById('personalPanel').classList.remove('open');
+            document.getElementById('aboutPanel').classList.add('open'); 
+        }
+        function closeAbout() { document.getElementById('aboutPanel').classList.remove('open'); }
+
+        // Awards panel logic removed (function kept just in case of stale calls, but empty)
+        function openAwards() {} 
+        function closeAwards() {} 
+
+        function openPersonal() { 
+            closeMenu(); 
+            // Close about panel and any detail panel if open to clean view
+            document.getElementById('aboutPanel').classList.remove('open');
+            const detailPanel = document.getElementById('detailPanel');
+            if (detailPanel.classList.contains('open')) {
+                closeDetail();
+            }
+            document.getElementById('personalPanel').classList.add('open'); 
+        }
+        function closePersonal() { document.getElementById('personalPanel').classList.remove('open'); }
+
+        // NEW: Specific toggle for About Awards section
+        function toggleAboutAwards() {
+            const content = document.getElementById('aboutAwardsContent');
+            const toggleBtn = document.getElementById('aboutAwardsToggle');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                toggleBtn.innerText = '+';
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggleBtn.innerText = '-';
+            }
+        }
+
+        // Project Credit Toggle - SCOPED to Detail Panel to fix conflict
+        function toggleCredits() {
+            const content = document.querySelector('#detailPanel .credits-content');
+            const toggleBtn = document.querySelector('#detailPanel .credits-toggle');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                toggleBtn.innerText = '+';
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggleBtn.innerText = '-';
+            }
+        }
+
+        // NEW: Project Awards Toggle (Similar to Credits)
+        function toggleProjectAwards() {
+            const content = document.getElementById('projAwardsContent');
+            const toggleBtn = document.getElementById('projAwardsToggle');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                toggleBtn.innerText = '+';
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggleBtn.innerText = '-';
+            }
+        }
+
+        // NEW: Buy Now Toggle
+        function toggleBuy() {
+            const content = document.getElementById('buyContent');
+            const toggleBtn = document.getElementById('buyToggle');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                toggleBtn.innerText = '+';
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggleBtn.innerText = '-';
+            }
+        }
+
+        function openDetail(projectId) {
+            const panel = document.getElementById('detailPanel');
+            const container = document.getElementById('videoContainer');
+            const quoteContainer = document.getElementById('panelQuotes');
+            const extraVideosContainer = document.getElementById('extraVideosContainer');
+            const imageContainer = document.getElementById('extraImagesContainer');
+            const creditsContainer = document.getElementById('creditsContainer');
+            const projectAwardsContainer = document.getElementById('projectAwardsContainer');
+            const articleContainer = document.getElementById('articleContainer');
+            const videoRowContainer = document.getElementById('videoRowContainer');
+            const buyContainer = document.getElementById('buyContainer');
+            const fullWidthImgContainer = document.getElementById('fullWidthImgContainer');
+            
+            const data = projectData[projectId];
+
+            // Reset all containers to prevent stale content flash
+            container.innerHTML = '';
+            container.style.display = 'none';
+            quoteContainer.innerHTML = '';
+            quoteContainer.style.display = 'none';
+            extraVideosContainer.innerHTML = '';
+            imageContainer.innerHTML = '';
+            imageContainer.className = 'image-stack';
+            creditsContainer.innerHTML = '';
+            projectAwardsContainer.innerHTML = '';
+            articleContainer.innerHTML = '';
+            articleContainer.style.display = 'none';
+            videoRowContainer.innerHTML = '';
+            videoRowContainer.style.display = 'none';
+            buyContainer.innerHTML = '';
+            buyContainer.style.display = 'none';
+            fullWidthImgContainer.innerHTML = '';
+            document.getElementById('panelLogo').style.display = 'none';
+            document.getElementById('panelTitle').style.display = 'block';
+            panel.scrollTop = 0;
+
+            // Populate Text
+            // Use innerHTML for desc to allow links, and apply specific class for custom intro style
+            const descEl = document.getElementById('panelDesc');
+            descEl.innerHTML = data.desc; 
+            if (data.introStyle === 'large') {
+                descEl.className = 'intro-text-large';
+            } else {
+                descEl.className = 'detail-desc';
+            }
+
+            document.getElementById('panelMeta').innerText = data.meta || '';
+
+            // Handle Title vs Logo
+            const titleEl = document.getElementById('panelTitle');
+            const logoEl = document.getElementById('panelLogo');
+            
+            if (data.logo) {
+                titleEl.style.display = 'none';
+                logoEl.src = `assets/images/${data.logo}`;
+                logoEl.style.display = 'block';
+            } else {
+                logoEl.style.display = 'none';
+                titleEl.style.display = 'block';
+                const displayTitle = data.title.includes(' / ') ? data.title.split(' / ')[1] : data.title;
+                titleEl.innerText = displayTitle;
+            }
+
+            // HANDLE BUY LINKS
+            if (data.buyLinks) {
+                let buyHTML = `
+                    <div class="credits-header" onclick="toggleBuy()">
+                        <div class="credits-toggle" id="buyToggle">+</div>
+                        <span class="credits-label">BUY NOW</span>
+                    </div>
+                    <div class="credits-content" id="buyContent">
+                        <ul class="buy-list">
+                `;
+                data.buyLinks.forEach(link => {
+                    buyHTML += `<li><a href="${link.url}" target="_blank">${link.name}</a></li>`;
+                });
+                buyHTML += `</ul></div>`;
+                buyContainer.innerHTML = buyHTML;
+                buyContainer.style.display = 'block';
+            } else {
+                buyContainer.style.display = 'none';
+                buyContainer.innerHTML = '';
+            }
+
+            // HANDLE CREDITS
+            if(data.credits) {
+                let creditsHTML = `
+                    <div class="credits-header" onclick="toggleCredits()">
+                        <div class="credits-toggle">+</div>
+                        <span class="credits-label">Credits</span>
+                    </div>
+                    <div class="credits-content">
+                        <ul>
+                `;
+                data.credits.forEach(cred => {
+                    creditsHTML += `<li class="credits-item">${cred}</li>`;
+                });
+                creditsHTML += `</ul></div>`;
+                creditsContainer.innerHTML = creditsHTML;
+                creditsContainer.style.display = 'block';
+            } else {
+                creditsContainer.style.display = 'none';
+                creditsContainer.innerHTML = '';
+            }
+
+            // HANDLE PROJECT AWARDS
+            if(data.projectAwards) {
+                let awardsHTML = `
+                    <div class="credits-container" style="border-top: none; margin-top: 0;"> 
+                        <div class="credits-header" onclick="toggleProjectAwards()">
+                            <div class="credits-toggle" id="projAwardsToggle">+</div>
+                            <span class="credits-label">Awards</span>
+                        </div>
+                        <div class="credits-content" id="projAwardsContent">
+                            <ul>
+                `;
+                data.projectAwards.forEach(award => {
+                    awardsHTML += `<li class="credits-item">${award}</li>`;
+                });
+                awardsHTML += `</ul></div></div>`;
+                projectAwardsContainer.innerHTML = awardsHTML;
+                projectAwardsContainer.style.display = 'block';
+            } else {
+                projectAwardsContainer.style.display = 'none';
+                projectAwardsContainer.innerHTML = '';
+            }
+
+            // HANDLE QUOTES
+            if (data.quotes) {
+                let quoteHTML = '';
+                data.quotes.forEach(q => {
+                    quoteHTML += `
+                        <div class="quote-row">
+                            <img src="assets/images/logos/${q.logo}" alt="Source Logo" class="quote-logo">
+                            <span class="quote-text">${q.text}</span>
+                        </div>
+                    `;
+                });
+                quoteContainer.innerHTML = quoteHTML;
+                quoteContainer.style.display = 'block';
+            } else {
+                quoteContainer.style.display = 'none';
+                quoteContainer.innerHTML = '';
+            }
+
+            // HANDLE ARTICLE
+            if (data.article) {
+                const logoImg = data.article.logo ? `<img src="assets/images/logos/${data.article.logo}" alt="Article Source" style="width: 100px; height: auto; margin-bottom: 20px; display: block;">` : '';
+                const titleStyle = data.article.logo ? 'border-top: none; padding-top: 0;' : '';
+                
+                let articleHTML = `
+                    <div class="article-block">
+                        ${logoImg}
+                        <h3 class="article-title" style="${titleStyle}">${data.article.title}</h3>
+                        <div class="article-text">${data.article.text}</div>
+                    </div>
+                `;
+                articleContainer.innerHTML = articleHTML;
+                articleContainer.style.display = 'block';
+            } else {
+                articleContainer.style.display = 'none';
+                articleContainer.innerHTML = '';
+            }
+
+            // Handle Main Video
+            if(data.vimeoId) {
+                const joiner = data.vimeoId.includes('?') ? '&' : '?';
+                container.innerHTML = `
+                    <iframe src="https://player.vimeo.com/video/${data.vimeoId}${joiner}autoplay=1&loop=1&title=0&byline=0&portrait=0" 
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                    frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                `;
+                container.style.display = 'block';
+            } else {
+                container.innerHTML = '';
+                container.style.display = 'none';
+            }
+
+            // Handle Extra Videos
+            extraVideosContainer.innerHTML = ''; // Reset
+            if (data.extraVideos) {
+                data.extraVideos.forEach(video => {
+                    const joiner = video.vimeoId.includes('?') ? '&' : '?';
+                    const html = `
+                        <div class="extra-video-block">
+                            <h3 class="extra-video-title">${video.title}</h3>
+                            <div class="detail-video-wrapper">
+                                <iframe src="https://player.vimeo.com/video/${video.vimeoId}${joiner}autoplay=0&loop=1&title=0&byline=0&portrait=0" 
+                                style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    `;
+                    extraVideosContainer.innerHTML += html;
+                });
+            }
+
+            // NEW: Handle Video Row (3 videos side-by-side)
+            videoRowContainer.innerHTML = '';
+            if (data.videoRow) {
+                videoRowContainer.style.display = 'grid';
+                data.videoRow.forEach(vid => {
+                    const vidId = vid.id || vid;
+                    const hash = vid.h ? `&h=${vid.h}` : '';
+                    const title = vid.title || '';
+
+                    // Removed background=1 to enable play button
+                    const html = `
+                        <div class="video-col">
+                            <div class="video-wrapper-916">
+                                <iframe src="https://player.vimeo.com/video/${vidId}?autoplay=0&loop=1&title=0&byline=0&portrait=0${hash}" 
+                                style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                                frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
+                            <div class="video-caption">${title}</div>
+                        </div>
+                    `;
+                    videoRowContainer.innerHTML += html;
+                });
+            } else {
+                videoRowContainer.style.display = 'none';
+            }
+
+            // Handle Images
+            imageContainer.innerHTML = ''; 
+            // Reset layout class
+            imageContainer.className = 'image-stack'; 
+            
+            // Check for custom layout override
+            if (data.imageLayout) {
+                imageContainer.className = data.imageLayout;
+            }
+
+            if (data.images) {
+                data.images.forEach(item => {
+                    if (typeof item === 'string') {
+                        const img = document.createElement('img');
+                        img.src = `assets/images/${item}`;
+                        // Don't add .stack-img if we are in a grid layout, let CSS handle it
+                        if (!data.imageLayout) {
+                            img.classList.add('stack-img');
+                        }
+                        imageContainer.appendChild(img);
+                    } else {
+                        const figure = document.createElement('figure');
+                        const img = document.createElement('img');
+                        img.src = `assets/images/${item.src}`;
+                        if (!data.imageLayout) {
+                            img.classList.add('stack-img');
+                        }
+                        
+                        const caption = document.createElement('figcaption');
+                        caption.innerText = item.caption;
+                        
+                        figure.appendChild(img);
+                        figure.appendChild(caption);
+                        imageContainer.appendChild(figure);
+                    }
+                });
+            }
+
+            // Handle Full Width Image (e.g., obtran-6)
+            fullWidthImgContainer.innerHTML = '';
+            if (data.fullWidthImage) {
+                const fwImg = document.createElement('img');
+                fwImg.src = `assets/images/${data.fullWidthImage}`;
+                fwImg.style.width = '100%';
+                fwImg.style.display = 'block';
+                fwImg.style.marginTop = '60px'; // Space from grid
+                fullWidthImgContainer.appendChild(fwImg);
+            }
+
+            panel.classList.add('open');
+        }
+
+        function closeDetail() {
+            const panel = document.getElementById('detailPanel');
+            const container = document.getElementById('videoContainer');
+            panel.classList.remove('open');
+            setTimeout(() => { 
+                container.innerHTML = ""; 
+                document.getElementById('creditsContainer').innerHTML = "";
+                document.getElementById('projectAwardsContainer').innerHTML = "";
+                document.getElementById('panelQuotes').innerHTML = "";
+                document.getElementById('articleContainer').innerHTML = "";
+                document.getElementById('extraVideosContainer').innerHTML = "";
+                document.getElementById('videoRowContainer').innerHTML = "";
+                document.getElementById('buyContainer').innerHTML = "";
+                document.getElementById('extraImagesContainer').innerHTML = "";
+                document.getElementById('fullWidthImgContainer').innerHTML = "";
+                document.getElementById('panelLogo').style.display = 'none';
+                document.getElementById('panelTitle').style.display = 'block';
+                panel.scrollTop = 0;
+            }, 700);
+        }
+
+    </script>
+</body>
+</html>
