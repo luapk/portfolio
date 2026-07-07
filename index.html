@@ -10,11 +10,18 @@
     <meta name="keywords" content="Paul Knott, Creative Director, Advertising, adam&eve /TBWA, Wieden+Kennedy, AI, Film">
     <meta name="author" content="Paul Knott">
     
+    <meta property="og:type" content="website">
     <meta property="og:title" content="Paul Knott">
     <meta property="og:description" content="Film, Interactive, and AI Innovation.">
-    <meta property="og:image" content="assets/images/social-share.jpg">
+    <meta property="og:image" content="https://www.paulknott.com/assets/images/social-share.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://www.paulknott.com">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://www.paulknott.com/assets/images/social-share.jpg">
+
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +30,20 @@
     <style>
         /* --- 1. GLOBAL & RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Interactive elements are real <button>s for keyboard access;
+           strip UA styles so they render like the divs they replaced. */
+        button {
+            background: none;
+            border: none;
+            font: inherit;
+            color: inherit;
+            text-align: inherit;
+            letter-spacing: inherit;
+            cursor: pointer;
+        }
+        a { color: inherit; }
+        :focus-visible { outline: 2px solid #ccff00; outline-offset: 2px; }
 
         /* --- CUSTOM FONT LOADING (MIGRA) --- */
         @font-face {
@@ -70,9 +91,10 @@
         /* UPDATED LOGO CONTAINER - TAG STYLE */
         .logo-container {
             display: flex;
-            gap: 10px; 
+            gap: 10px;
             cursor: pointer;
             pointer-events: auto;
+            text-decoration: none;
         }
 
         .logo-tag {
@@ -125,7 +147,7 @@
         }
         .overlay.active { opacity: 1; pointer-events: all; }
         .overlay ul { list-style: none; text-align: center; }
-        .overlay a {
+        .overlay ul a, .overlay ul button {
             font-family: 'Migra', serif; 
             font-weight: 800; 
             font-size: 4rem; 
@@ -134,7 +156,7 @@
             display: block; margin: 20px; cursor: pointer;
             transition: color 0.3s;
         }
-        .overlay a:hover { color: #ccff00; }
+        .overlay ul a:hover, .overlay ul button:hover { color: #ccff00; }
 
         /* --- 4. THE PROJECT SLIDES --- */
         .project-slide {
@@ -687,42 +709,42 @@
 <body>
 
     <nav class="nav-bar">
-        <div class="logo-container" onclick="location.reload()">
+        <a class="logo-container" href="/" aria-label="Home">
             <div class="logo-tag logo-name">PAUL KNOTT</div>
             <div class="logo-tag logo-role">CREATIVE DIRECTOR</div>
-        </div>
-        <div class="burger" onclick="toggleMenu()">
+        </a>
+        <button type="button" class="burger" onclick="toggleMenu()" aria-label="Open menu">
             <span></span>
             <span></span>
             <span></span>
-        </div>
+        </button>
     </nav>
 
     <div class="overlay" id="overlay">
-        <div class="close-detail" onclick="closeMenu()">✕</div>
+        <button type="button" class="close-detail" onclick="closeMenu()" aria-label="Close">✕</button>
         <ul>
-            <li><a onclick="openAbout()">About</a></li>
-            <li><a onclick="closeMenu()">Work</a></li>
-            <li><a onclick="openPersonal()">Personal</a></li>
-            <li><a href="/cdn-cgi/l/email-protection#1b6b7a6e777075746f6f5b7c767a727735787476">Contact</a></li>
+            <li><button type="button" onclick="openAbout()">About</button></li>
+            <li><button type="button" onclick="closeMenu()">Work</button></li>
+            <li><button type="button" onclick="openPersonal()">Personal</button></li>
+            <li><a href="mailto:paulknott@gmail.com">Contact</a></li>
         </ul>
     </div>
 
     <div class="detail-panel" id="aboutPanel">
-        <div class="close-detail" onclick="closeAbout()">✕</div>
+        <button type="button" class="close-detail" onclick="closeAbout()" aria-label="Close">✕</button>
         <div class="detail-container">
             <h2 class="detail-title">About</h2>
             <div class="about-text">
                 Paul is a strategically-minded global Creative Director at <strong>adam&eve /TBWA</strong>. He leads cross-discipline teams to build campaigns spanning branded entertainment, gaming and emerging tech. He's passionate about navigating the new stuff, while keeping the work human, effective and embedded in culture.<br><br> 
-                Highlights include creating a mini-episode of <span class="bio-link" onclick="openDetail('magentatv')">Stranger Things</span>, 
-                teaching Cristiano Ronaldo a new skill move to launch <span class="bio-link" onclick="openDetail('fifa_tornado')">FIFA18</span>, helping Google to map <span class="bio-link" onclick="openDetail('google_loch')">Loch Ness</span> in StreetView, 
-                <span class="bio-link" onclick="openDetail('honda')">'The Other Side'</span> for Honda, working with Wes Anderson for H&M <span class="bio-link" onclick="openDetail('hm')">'Come Together'</span> (he had a nice suit) 
-                and recreating <span class="bio-link" onclick="openDetail('johnlewis')">'Bohemian Rhapsody'</span> for John Lewis and Partners.<br><br>
-                He makes <span class="easter-egg" onclick="openPersonal()">awful music with synthesisers</span> in his spare time.
+                Highlights include creating a mini-episode of <span class="bio-link" role="button" tabindex="0" onclick="openDetail('magentatv')">Stranger Things</span>, 
+                teaching Cristiano Ronaldo a new skill move to launch <span class="bio-link" role="button" tabindex="0" onclick="openDetail('fifa_tornado')">FIFA18</span>, helping Google to map <span class="bio-link" role="button" tabindex="0" onclick="openDetail('google_loch')">Loch Ness</span> in StreetView, 
+                <span class="bio-link" role="button" tabindex="0" onclick="openDetail('honda')">'The Other Side'</span> for Honda, working with Wes Anderson for H&M <span class="bio-link" role="button" tabindex="0" onclick="openDetail('hm')">'Come Together'</span> (he had a nice suit) 
+                and recreating <span class="bio-link" role="button" tabindex="0" onclick="openDetail('johnlewis')">'Bohemian Rhapsody'</span> for John Lewis and Partners.<br><br>
+                He makes <span class="easter-egg" role="button" tabindex="0" onclick="openPersonal()">awful music with synthesisers</span> in his spare time.
             </div>
 
             <div class="credits-container" style="margin-top: 60px; border: none;">
-                <div class="credits-header" onclick="toggleAboutAwards()">
+                <div class="credits-header" role="button" tabindex="0" onclick="toggleAboutAwards()">
                     <div class="credits-toggle" id="aboutAwardsToggle">+</div>
                     <span class="credits-label">Awards</span>
                 </div>
@@ -870,7 +892,7 @@
                 <a href="https://www.linkedin.com/in/paul-k-6a1a54" target="_blank" class="contact-icon">
                     <img src="assets/images/linkedin.svg" alt="LinkedIn" width="32" height="32">
                 </a>
-                <a href="/cdn-cgi/l/email-protection#1c6c7d697077727368685c7b717d7570327f7371" class="contact-icon">
+                <a href="mailto:paulknott@gmail.com" class="contact-icon" aria-label="Email Paul">
                     <img src="assets/images/email.svg" alt="Email" width="32" height="32">
                 </a>
             </div>
@@ -878,7 +900,7 @@
     </div>
 
     <div class="detail-panel" id="personalPanel">
-        <div class="close-detail" onclick="closePersonal()">✕</div>
+        <button type="button" class="close-detail" onclick="closePersonal()" aria-label="Close">✕</button>
         <div class="detail-container">
             <h2 class="detail-title">Personal</h2>
             <div class="detail-desc">A range of experimental R&D projects exploring emerging AI, music, and behavioural interfaces.</div>
@@ -888,7 +910,7 @@
                     <span class="tag lime">Electronic vinyl imprint</span><br><br>
                     <h3>Oblivious Transfer</h3>
                     <p>An experimental vinyl label distributed by Clone, featuring comic inserts by artists including Jake Lunt Davies and Alice Bloomfield.</p>
-                    <a onclick="openDetail('oblivious')" class="personal-link">Listen</a>
+                    <a onclick="openDetail('oblivious')" class="personal-link" role="button" tabindex="0">Listen</a>
                 </div>
                 <div class="personal-card">
                     <video muted loop playsinline preload="metadata"><source src="assets/loops/qanu.mp4" type="video/mp4"></video>
@@ -909,7 +931,7 @@
     </div>
 
     <div class="detail-panel" id="detailPanel">
-        <div class="close-detail" onclick="closeDetail()">✕</div>
+        <button type="button" class="close-detail" onclick="closeDetail()" aria-label="Close">✕</button>
         <div class="detail-container">
             
             <img id="panelLogo" class="project-logo" style="display: none;" src="" alt="Project Logo">
@@ -947,7 +969,7 @@
             <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
             <h1>Telekom x<br>Stranger Things</h1>
             <p>How to weave a tech brand into Netflix's most watched show of all time.</p>
-            <div class="btn" onclick="openDetail('magentatv')">View Campaign</div>
+            <button type="button" class="btn" onclick="openDetail('magentatv')">View Campaign</button>
         </div>
     </div>
 
@@ -957,7 +979,7 @@
             <div class="tag-row"><span class="tag">Film</span><span class="tag">Wes Anderson</span></div>
             <h1>H&M /<br>Come Together</h1>
             <p>A Wes Anderson winter tale that redefined the holiday blockbuster.</p>
-            <div class="btn" onclick="openDetail('hm')">Watch Film</div>
+            <button type="button" class="btn" onclick="openDetail('hm')">Watch Film</button>
         </div>
     </div>
 
@@ -967,7 +989,7 @@
             <div class="tag-row"><span class="tag">Brand Campaign</span><span class="tag">Partnership</span></div>
             <h1>John Lewis /<br>Bohemian Rhapsody</h1>
             <p>Transforming an ownership model into an emotional cinematic adventure.</p>
-            <div class="btn" onclick="openDetail('johnlewis')">View Campaign</div>
+            <button type="button" class="btn" onclick="openDetail('johnlewis')">View Campaign</button>
         </div>
     </div>
 
@@ -977,7 +999,7 @@
             <div class="tag-row"><span class="tag">Gaming</span><span class="tag">Activation</span></div>
             <h1>EA Sports /<br>More Than a Game</h1>
             <p>The in-game skill move that spread like wildfire in the real world.</p>
-            <div class="btn" onclick="openDetail('fifa_tornado')">View Case</div>
+            <button type="button" class="btn" onclick="openDetail('fifa_tornado')">View Case</button>
         </div>
     </div>
 
@@ -987,7 +1009,7 @@
             <div class="tag-row"><span class="tag">Interactive Film</span><span class="tag">Daniel Wolfe</span></div>
             <h1>Honda /<br>The Other Side</h1>
             <p>An interactive film innovation that revealed Honda's darker side.</p>
-            <div class="btn" onclick="openDetail('honda')">TYPE 'R'</div>
+            <button type="button" class="btn" onclick="openDetail('honda')">TYPE 'R'</button>
         </div>
     </div>
 
@@ -997,7 +1019,7 @@
             <div class="tag-row"><span class="tag">Brand Platform</span><span class="tag">Documentary</span></div>
             <h1>Volkswagen /<br>YourWagen</h1>
             <p>Handing ownership of the brand back to the people who made it.</p>
-            <div class="btn" onclick="openDetail('vw_yourwagen')">Explore Stories</div>
+            <button type="button" class="btn" onclick="openDetail('vw_yourwagen')">Explore Stories</button>
         </div>
     </div>
 
@@ -1007,7 +1029,7 @@
             <div class="tag-row"><span class="tag">Activation</span><span class="tag">Health</span></div>
             <h1>IAMS /<br>Waylon</h1>
             <p>Making an invisible health crisis impossible to ignore.</p>
-            <div class="btn" onclick="openDetail('iams_waylon')">See Activation</div>
+            <button type="button" class="btn" onclick="openDetail('iams_waylon')">See Activation</button>
         </div>
     </div>
 
@@ -1017,7 +1039,7 @@
             <div class="tag-row"><span class="tag">Partnership</span><span class="tag">Animation</span></div>
             <h1>IAMS /<br>Garfield</h1>
             <p>Putting a lazy pop-culture icon to work for a healthy cause.</p>
-            <div class="btn" onclick="openDetail('iams_garfield')">View Campaign</div>
+            <button type="button" class="btn" onclick="openDetail('iams_garfield')">View Campaign</button>
         </div>
     </div>
 
@@ -1027,7 +1049,7 @@
             <div class="tag-row"><span class="tag">Global Launch</span><span class="tag">Play Has No Limits</span></div>
             <h1>PlayStation 5 /<br>The Edge</h1>
             <p>A cinematic armada mythologising the dawn of a new era of play.</p>
-            <div class="btn" onclick="openDetail('ps5_edge')">View Campaign</div>
+            <button type="button" class="btn" onclick="openDetail('ps5_edge')">View Campaign</button>
         </div>
     </div>
 
@@ -1037,7 +1059,7 @@
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Product Demo</span></div>
             <h1>Volkswagen /<br>See the Unseen</h1>
             <p>Selling safety technology through the visceral tension of a Hollywood thriller.</p>
-            <div class="btn" onclick="openDetail('vw_unseen')">Watch Film</div>
+            <button type="button" class="btn" onclick="openDetail('vw_unseen')">Watch Film</button>
         </div>
     </div>
 
@@ -1047,7 +1069,7 @@
             <div class="tag-row"><span class="tag">Campaign</span><span class="tag">Street Culture</span></div>
             <h1>EA Sports /<br>Wrong Breaks New Ground</h1>
             <p>Championing the gritty, rule-breaking creativity of street football subculture.</p>
-            <div class="btn" onclick="openDetail('fifa_wrong')">Play Wrong</div>
+            <button type="button" class="btn" onclick="openDetail('fifa_wrong')">Play Wrong</button>
         </div>
     </div>
 
@@ -1057,7 +1079,7 @@
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">M. van Heijningen</span></div>
             <h1>PlayStation x<br>Battlefield 6</h1>
             <p>Deconstructing the chaos of war to showcase next-gen immersion.</p>
-            <div class="btn" onclick="openDetail('ps_battlefield')">Watch Spot</div>
+            <button type="button" class="btn" onclick="openDetail('ps_battlefield')">Watch Spot</button>
         </div>
     </div>
 
@@ -1067,7 +1089,7 @@
             <div class="tag-row"><span class="tag">Branded Ent</span><span class="tag">Carl Erik Rinsch</span></div>
             <h1>Mercedes-Benz /<br>Escape the Map</h1>
             <p>Gamifying the test drive within a dystopian, glitching Google Street View.</p>
-            <div class="btn" onclick="openDetail('mercedes')">Watch Film</div>
+            <button type="button" class="btn" onclick="openDetail('mercedes')">Watch Film</button>
         </div>
     </div>
 
@@ -1077,7 +1099,7 @@
             <div class="tag-row"><span class="tag">Interactive Film</span><span class="tag">The Glue Society</span></div>
             <h1>Doritos /<br>Dip Desperado</h1>
             <p>Creating an absurd sporting mythology to ritualise the act of dipping.</p>
-            <div class="btn" onclick="openDetail('doritos')">View Case</div>
+            <button type="button" class="btn" onclick="openDetail('doritos')">View Case</button>
         </div>
     </div>
 
@@ -1087,7 +1109,7 @@
             <div class="tag-row"><span class="tag">Interactive</span><span class="tag">Street View</span></div>
             <h1>Google Maps /<br>Loch Ness</h1>
             <p>Reigniting a global mystery in the name of exploration</p>
-            <div class="btn" onclick="openDetail('google_loch')">Explore Loch</div>
+            <button type="button" class="btn" onclick="openDetail('google_loch')">Explore Loch</button>
         </div>
     </div>
 
@@ -1097,7 +1119,7 @@
             <div class="tag-row"><span class="tag">AI Innovation</span><span class="tag">Google Veo</span></div>
             <h1>IAMS /<br>Puppy/Kitten Studios</h1>
             <p>Harnessing generative AI to revolutionize pitching for a new family member.</p>
-            <div class="btn" onclick="openDetail('iams_ai')">Create Trailer</div>
+            <button type="button" class="btn" onclick="openDetail('iams_ai')">Create Trailer</button>
         </div>
     </div>
 
@@ -1107,7 +1129,7 @@
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Cinematography</span></div>
             <h1>PlayStation x<br>EAFC</h1>
             <p>Innovative macro-cinematography that pulls players into the game's molecular detail.</p>
-            <div class="btn" onclick="openDetail('fc_closer')">Get Closer</div>
+            <button type="button" class="btn" onclick="openDetail('fc_closer')">Get Closer</button>
         </div>
     </div>
 
@@ -1117,7 +1139,7 @@
             <div class="tag-row"><span class="tag">Integrated</span><span class="tag">Connectivity</span></div>
             <h1>Virgin Media /<br>Faster Brings Us Closer</h1>
             <p>Timeless tales retold for the digital age.</p>
-            <div class="btn" onclick="openDetail('virgin')">View Series</div>
+            <button type="button" class="btn" onclick="openDetail('virgin')">View Series</button>
         </div>
     </div>
 
@@ -1127,7 +1149,7 @@
             <div class="tag-row"><span class="tag">Rebrand</span><span class="tag">Identity</span></div>
             <h1>Capital Radio /<br>Rebrand</h1>
             <p>Giving the nation's most popular radio station its mojo back.</p>
-            <div class="btn" onclick="openDetail('capital')">View Rebrand</div>
+            <button type="button" class="btn" onclick="openDetail('capital')">View Rebrand</button>
         </div>
     </div>
 
@@ -1139,14 +1161,14 @@
                 <a href="https://www.linkedin.com/in/paul-k-6a1a54" target="_blank" class="contact-icon">
                     <img src="assets/images/linkedin.svg" alt="LinkedIn" width="32" height="32">
                 </a>
-                <a href="/cdn-cgi/l/email-protection#512130243d3a3f3e252511363c30383d7f323e3c" class="contact-icon">
+                <a href="mailto:paulknott@gmail.com" class="contact-icon" aria-label="Email Paul">
                     <img src="assets/images/email.svg" alt="Email" width="32" height="32">
                 </a>
             </div>
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         const projectData = {
             oblivious: {
                 title: "Oblivious Transfer",
@@ -1472,8 +1494,8 @@
                 images: [
                     { src: "honda-1.JPG", caption: "The head-scratching dual storyboard taking shape" },
                     "honda-1b.jpg",
-                    "honda-2.png",
-                    "honda-3.png"
+                    "honda-2.jpg",
+                    "honda-3.jpg"
                 ]
             },
             fifa_wrong: {
@@ -1662,7 +1684,8 @@
                 // Skip 'oblivious' for the main work index footer
                 if(key === 'oblivious') return;
 
-                const link = document.createElement('a');
+                const link = document.createElement('button');
+                link.type = 'button';
                 link.className = 'index-item';
                 // Convert slash to Line Break for clean layout in index
                 link.innerHTML = projectData[key].title.replace(" / ", "<br>"); 
@@ -1689,6 +1712,15 @@
                 window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
             } else if (e.key === "ArrowUp") {
                 window.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+            }
+        });
+
+        // Let Enter/Space activate the inline role="button" elements
+        // (bio links, credit toggles) like real buttons
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"]')) {
+                e.preventDefault();
+                e.target.click();
             }
         });
 
@@ -1849,7 +1881,7 @@
             // HANDLE BUY LINKS
             if (data.buyLinks) {
                 let buyHTML = `
-                    <div class="credits-header" onclick="toggleBuy()">
+                    <div class="credits-header" role="button" tabindex="0" onclick="toggleBuy()">
                         <div class="credits-toggle" id="buyToggle">+</div>
                         <span class="credits-label">BUY NOW</span>
                     </div>
@@ -1870,7 +1902,7 @@
             // HANDLE CREDITS
             if(data.credits) {
                 let creditsHTML = `
-                    <div class="credits-header" onclick="toggleCredits()">
+                    <div class="credits-header" role="button" tabindex="0" onclick="toggleCredits()">
                         <div class="credits-toggle">+</div>
                         <span class="credits-label">Credits</span>
                     </div>
@@ -1892,7 +1924,7 @@
             if(data.projectAwards) {
                 let awardsHTML = `
                     <div class="credits-container" style="border-top: none; margin-top: 0;"> 
-                        <div class="credits-header" onclick="toggleProjectAwards()">
+                        <div class="credits-header" role="button" tabindex="0" onclick="toggleProjectAwards()">
                             <div class="credits-toggle" id="projAwardsToggle">+</div>
                             <span class="credits-label">Awards</span>
                         </div>
@@ -2022,6 +2054,7 @@
                         const img = document.createElement('img');
                         img.loading = 'lazy';
                         img.decoding = 'async';
+                        img.alt = '';
                         img.src = `assets/images/${item}`;
                         // Don't add .stack-img if we are in a grid layout, let CSS handle it
                         if (!data.imageLayout) {
@@ -2033,6 +2066,7 @@
                         const img = document.createElement('img');
                         img.loading = 'lazy';
                         img.decoding = 'async';
+                        img.alt = item.caption || '';
                         img.src = `assets/images/${item.src}`;
                         if (!data.imageLayout) {
                             img.classList.add('stack-img');
@@ -2054,6 +2088,7 @@
                 const fwImg = document.createElement('img');
                 fwImg.loading = 'lazy';
                 fwImg.decoding = 'async';
+                fwImg.alt = '';
                 fwImg.src = `assets/images/${data.fullWidthImage}`;
                 fwImg.style.width = '100%';
                 fwImg.style.display = 'block';
