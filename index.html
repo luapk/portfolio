@@ -406,11 +406,31 @@
         }
         .close-detail:hover { background-color: #ccff00; border-color: #ccff00; color: #000; }
 
-        .detail-video-wrapper { 
-            width: 100%; aspect-ratio: 16 / 9; height: auto; 
-            background: #000; margin-bottom: 50px; position: relative; 
+        .detail-video-wrapper {
+            width: 100%; aspect-ratio: 16 / 9; height: auto;
+            background: #000; margin-bottom: 50px; position: relative;
         }
-        
+
+        /* PORTRAIT LAYOUT: vertical video beside the copy */
+        .portrait-layout.show {
+            display: grid;
+            grid-template-columns: minmax(0, 360px) 1fr;
+            gap: 60px; align-items: center;
+            margin-bottom: 60px;
+        }
+        .portrait-video {
+            position: relative; width: 100%; aspect-ratio: 9 / 16;
+            background: #000; overflow: hidden;
+        }
+        .portrait-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        .portrait-copy .detail-meta { margin-bottom: 25px; }
+        .portrait-copy .detail-title { margin-bottom: 25px; }
+        .portrait-copy .detail-desc { margin-bottom: 0; }
+        @media (max-width: 768px) {
+            .portrait-layout.show { grid-template-columns: 1fr; gap: 35px; }
+            .portrait-video { max-width: 340px; }
+        }
+
         .detail-meta { 
             font-family: 'Roboto', sans-serif; font-weight: 500;
             font-size: 0.85rem; color: #888; 
@@ -1024,6 +1044,13 @@
                     <a onclick="openDetail('loomer')" class="personal-link" role="button" tabindex="0">View Project</a>
                 </div>
                 <div class="personal-card">
+                    <video muted loop playsinline preload="metadata"><source src="assets/loops/vinyl_loop.mp4" type="video/mp4"></video>
+                    <span class="tag lime">Crate-Digging App</span><br><br>
+                    <h3>Vinyl Vault</h3>
+                    <p>A DJ-minded catalogue for a record collection — audio previews, BPM and smart crates for building a set.</p>
+                    <a onclick="openDetail('vinyl')" class="personal-link" role="button" tabindex="0">View Project</a>
+                </div>
+                <div class="personal-card">
                     <video muted loop playsinline preload="metadata"><source src="assets/loops/obtran.mp4" type="video/mp4"></video>
                     <span class="tag lime">Electronic vinyl imprint</span><br><br>
                     <h3>Oblivious Transfer</h3>
@@ -1053,6 +1080,8 @@
         <div class="detail-container">
             
             <img id="panelLogo" class="project-logo" style="display: none;" src="" alt="Project Logo">
+
+            <div class="portrait-layout" id="portraitContainer" style="display: none;"></div>
 
             <div class="detail-video-wrapper" id="videoContainer"></div>
             <div class="detail-meta" id="panelMeta">Client / Role</div>
@@ -1293,6 +1322,12 @@
                 meta: "Personal R&D / AI Storyboard Tool",
                 desc: "Loomer turns a written script into a finished, shareable storyboard in minutes. What sets it apart is that it understands how films are actually shot. Most text-to-image tools take a rough description and produce a nice-looking but disconnected picture. Loomer instead breaks a script into a proper shot list, builds a running record of every character, location and prop, and locks reference stills so faces and places stay consistent from one frame to the next. Crucially, it carries the staging through each shot — scale, camera position, screen direction, eyelines, where people stand in relation to each other and the set — so the space holds together across cuts the way a real production's continuity would. A built-in continuity check catches eyeline and geography errors before they reach a client. Directors keep full control: insert a frame, reorder the sequence, fine-tune a reference, and export in several pitch-ready formats. Built and hardened in demanding agency and research settings, it does in minutes what used to take an illustrator days.",
                 images: ["loomer_1.jpg", "loomer_2.jpg"]
+            },
+            vinyl: {
+                title: "Vinyl Vault",
+                meta: "Personal R&D / Crate-Digging App",
+                desc: "Vinyl Vault is a personal catalogue app for a record collection that thinks like a DJ. Each sleeve is logged with an audio preview and its BPM, then sorted into smart crates that group records by tempo and feel — so the right one surfaces the moment a set calls for it. It bridges the tactile ritual of digging with the speed of digital, turning a wall of vinyl into a searchable library and building a set into a few taps.",
+                videoPortrait: "1207867791?h=59406e24fe"
             },
             oblivious: {
                 title: "Oblivious Transfer",
@@ -1974,6 +2009,13 @@
             fullWidthImgContainer.innerHTML = '';
             document.getElementById('panelLogo').style.display = 'none';
             document.getElementById('panelTitle').style.display = 'block';
+            const portraitContainer = document.getElementById('portraitContainer');
+            portraitContainer.innerHTML = '';
+            portraitContainer.classList.remove('show');
+            portraitContainer.style.display = 'none';
+            // Restore the standard (non-portrait) text blocks
+            document.getElementById('panelMeta').style.display = '';
+            document.getElementById('panelDesc').style.display = '';
             panel.scrollTop = 0;
 
             // Populate Text
@@ -2001,6 +2043,28 @@
                 titleEl.style.display = 'block';
                 const displayTitle = data.title.includes(' / ') ? data.title.split(' / ')[1] : data.title;
                 titleEl.innerText = displayTitle;
+            }
+
+            // HANDLE PORTRAIT VIDEO LAYOUT (vertical video beside the copy)
+            if (data.videoPortrait) {
+                const joiner = data.videoPortrait.includes('?') ? '&' : '?';
+                const pTitle = data.title.includes(' / ') ? data.title.split(' / ')[1] : data.title;
+                portraitContainer.innerHTML = `
+                    <div class="portrait-video">
+                        <iframe src="https://player.vimeo.com/video/${data.videoPortrait}${joiner}autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0"
+                            allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="portrait-copy">
+                        ${data.meta ? `<div class="detail-meta">${data.meta}</div>` : ''}
+                        <h2 class="detail-title">${pTitle}</h2>
+                        <div class="detail-desc">${data.desc}</div>
+                    </div>`;
+                portraitContainer.style.display = 'grid';
+                portraitContainer.classList.add('show');
+                // Hide the stacked meta/title/desc; they live in the column now
+                titleEl.style.display = 'none';
+                document.getElementById('panelMeta').style.display = 'none';
+                document.getElementById('panelDesc').style.display = 'none';
             }
 
             // HANDLE BUY LINKS
@@ -2239,6 +2303,7 @@
                 document.getElementById('buyContainer').innerHTML = "";
                 document.getElementById('extraImagesContainer').innerHTML = "";
                 document.getElementById('fullWidthImgContainer').innerHTML = "";
+                document.getElementById('portraitContainer').innerHTML = "";
                 document.getElementById('panelLogo').style.display = 'none';
                 document.getElementById('panelTitle').style.display = 'block';
                 panel.scrollTop = 0;
