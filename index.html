@@ -126,6 +126,28 @@
             border: none;     
         }
 
+        /* NAV ACTIONS (view toggle + burger) */
+        .nav-actions {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+        }
+
+        /* GRID / CINEMATIC VIEW TOGGLE */
+        .view-toggle {
+            width: 24px; height: 24px;
+            margin-top: 3px;
+            mix-blend-mode: difference;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+        .view-toggle svg { display: block; width: 100%; height: 100%; fill: none; stroke: #fff; stroke-width: 1.5; }
+        .view-toggle:hover svg { stroke: #ccff00; }
+        .view-toggle .icon-cine { display: none; }
+        html.grid-mode .view-toggle .icon-grid { display: none; }
+        html.grid-mode .view-toggle .icon-cine { display: block; }
+        .view-toggle.menu-open { opacity: 0; pointer-events: none; }
+
         /* BURGER MENU ICON */
         .burger {
             width: 30px; height: 20px; cursor: pointer;
@@ -230,6 +252,50 @@
         .splash-form.shake { animation: splash-shake 0.18s ease 2; }
         body.locked { overflow: hidden; }
 
+        /* --- 3c. GRID VIEW --- */
+        .work-grid { display: none; }
+        html.grid-mode .work-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-items: start;
+            gap: 40px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 140px 40px 100px;
+        }
+        /* Grid mode: hide the cinematic slides (footer stays) and free the scroll */
+        html.grid-mode { scroll-snap-type: none; }
+        html.grid-mode .project-slide:not(.footer-slide) { display: none; }
+        html.grid-mode .footer-slide { border-top: none; }
+
+        .grid-card { display: block; text-align: left; }
+        .grid-thumb {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: #222;
+        }
+        .grid-thumb video {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.85;
+            transition: transform 0.6s ease, opacity 0.3s ease;
+        }
+        .grid-card:hover .grid-thumb video,
+        .grid-card:focus-visible .grid-thumb video { transform: scale(1.05); opacity: 1; }
+        .grid-title {
+            font-family: 'Migra', serif; font-weight: 800;
+            font-size: 1.35rem; line-height: 1.05; letter-spacing: -0.5px;
+            color: #fff; margin-top: 14px;
+            transition: color 0.2s ease;
+        }
+        .grid-card:hover .grid-title, .grid-card:focus-visible .grid-title { color: #ccff00; }
+        @media (max-width: 1000px) {
+            html.grid-mode .work-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 620px) {
+            html.grid-mode .work-grid { grid-template-columns: 1fr; padding: 120px 25px 80px; }
+        }
+
         /* --- 4. THE PROJECT SLIDES --- */
         .project-slide {
             position: sticky; 
@@ -297,15 +363,15 @@
         /* The x device in crossover titles: drawn as a two-line SVG so it can be
            large yet hairline-thin (a font glyph gets thicker as it grows). Its
            box sits on the text baseline to align with the base of the type row. */
-        h1 .thin-x {
+        .thin-x {
             display: inline-block;
             width: 0.66em;
             height: 0.66em;
             vertical-align: baseline;
             margin: 0 0.14em;
         }
-        h1 .thin-x svg { display: block; width: 100%; height: 100%; overflow: visible; }
-        h1 .thin-x line { stroke: currentColor; stroke-width: 0.7; }
+        .thin-x svg { display: block; width: 100%; height: 100%; overflow: visible; }
+        .thin-x line { stroke: currentColor; stroke-width: 0.7; }
         
         p { 
             font-family: 'Roboto', sans-serif;
@@ -844,11 +910,23 @@
             <div class="logo-tag logo-name">PAUL KNOTT</div>
             <div class="logo-tag logo-role">CREATIVE DIRECTOR</div>
         </a>
-        <button type="button" class="burger" onclick="toggleMenu()" aria-label="Open menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <div class="nav-actions">
+            <button type="button" class="view-toggle" id="viewToggle" onclick="toggleView()" aria-label="Switch to grid view" aria-pressed="false">
+                <svg class="icon-grid" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="2.5" y="2.5" width="5" height="5"/><rect x="9.5" y="2.5" width="5" height="5"/><rect x="16.5" y="2.5" width="5" height="5"/>
+                    <rect x="2.5" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/><rect x="16.5" y="9.5" width="5" height="5"/>
+                    <rect x="2.5" y="16.5" width="5" height="5"/><rect x="9.5" y="16.5" width="5" height="5"/><rect x="16.5" y="16.5" width="5" height="5"/>
+                </svg>
+                <svg class="icon-cine" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="2" y="5.5" width="20" height="13"/>
+                </svg>
+            </button>
+            <button type="button" class="burger" onclick="toggleMenu()" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
     </nav>
 
     <div class="overlay" id="overlay">
@@ -1109,6 +1187,8 @@
 
         </div>
     </div>
+
+    <section class="work-grid" id="workGrid" aria-label="Project grid"></section>
 
     <div class="project-slide">
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
@@ -1903,10 +1983,12 @@
             const burger = document.querySelector('.burger');
             overlay.classList.toggle('active');
             burger.classList.toggle('active');
+            document.getElementById('viewToggle').classList.toggle('menu-open', overlay.classList.contains('active'));
         }
         function closeMenu() {
             document.getElementById('overlay').classList.remove('active');
             document.querySelector('.burger').classList.remove('active');
+            document.getElementById('viewToggle').classList.remove('menu-open');
         }
 
         function openAbout() { 
@@ -2341,7 +2423,8 @@
         function updateLoopPlayback() {
             const vh = window.innerHeight;
             const blocked = !!document.querySelector('.detail-panel.open, .overlay.active')
-                || document.body.classList.contains('locked');
+                || document.body.classList.contains('locked')
+                || document.documentElement.classList.contains('grid-mode');
             loopSlides.forEach((slide, i) => {
                 const video = slide.querySelector('.bg-video');
                 if (!video) return;
@@ -2434,6 +2517,73 @@
             next();
             next();
         })();
+
+        // --- GRID VIEW ---
+        // Build a thumbnail card for each cinematic slide. Thumbs are paused
+        // poster frames — playing 19 loops in a grid would recreate the GPU
+        // and bandwidth problem the playback manager exists to solve — and
+        // each one plays only while hovered.
+        const workGrid = document.getElementById('workGrid');
+        let gridPostersWarmed = false;
+
+        document.querySelectorAll('.project-slide:not(.footer-slide)').forEach(slide => {
+            const slideBtn = slide.querySelector('.btn');
+            const idMatch = slideBtn && (slideBtn.getAttribute('onclick') || '').match(/openDetail\('([^']+)'\)/);
+            const source = slide.querySelector('.bg-video source');
+            const h1 = slide.querySelector('h1');
+            if (!idMatch || !source || !h1) return;
+
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'grid-card';
+            card.onclick = () => openDetail(idMatch[1]);
+
+            const thumb = document.createElement('div');
+            thumb.className = 'grid-thumb';
+            const v = document.createElement('video');
+            v.muted = true; v.loop = true; v.playsInline = true;
+            v.preload = 'none'; // fetch nothing until grid view is first opened
+            v.src = source.getAttribute('src');
+            thumb.appendChild(v);
+
+            const title = document.createElement('div');
+            title.className = 'grid-title';
+            title.innerHTML = h1.innerHTML.replace(/<br\s*\/?>/gi, ' ');
+
+            card.appendChild(thumb);
+            card.appendChild(title);
+            card.addEventListener('mouseenter', () => v.play().catch(() => {}));
+            card.addEventListener('mouseleave', () => v.pause());
+            workGrid.appendChild(card);
+        });
+
+        function warmGridPosters() {
+            if (gridPostersWarmed) return;
+            gridPostersWarmed = true;
+            workGrid.querySelectorAll('video').forEach(v => {
+                // seek a hair in so the browser paints a poster frame
+                v.addEventListener('loadedmetadata', () => { v.currentTime = 0.001; }, { once: true });
+                v.preload = 'metadata';
+                v.load();
+            });
+        }
+
+        function toggleView() {
+            const grid = document.documentElement.classList.toggle('grid-mode');
+            const btn = document.getElementById('viewToggle');
+            btn.setAttribute('aria-pressed', String(grid));
+            btn.setAttribute('aria-label', grid ? 'Switch to cinematic view' : 'Switch to grid view');
+            sessionStorage.setItem('pk_view', grid ? 'grid' : 'cine');
+            if (grid) warmGridPosters();
+            else workGrid.querySelectorAll('video').forEach(v => v.pause());
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            queueLoopUpdate();
+        }
+
+        // Restore the last chosen view for this session
+        if (sessionStorage.getItem('pk_view') === 'grid') {
+            toggleView();
+        }
 
     </script>
 </body>
