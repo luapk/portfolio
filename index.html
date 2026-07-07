@@ -671,6 +671,10 @@
             cursor: pointer; transition: all 0.3s ease; letter-spacing: 1.5px;
         }
         .personal-link:hover { background: #ccff00; border-color: #ccff00; color: #000; }
+        .personal-link.coming-soon {
+            border-color: #555; color: #888; cursor: default;
+        }
+        .personal-link.coming-soon:hover { background: none; border-color: #555; color: #888; }
 
         /* ABOUT */
         .about-text { 
@@ -917,7 +921,7 @@
                     <span class="tag purple">GEN AI SHORT FILM</span><br><br>
                     <h3>QANU</h3>
                     <p>Exploration in multi-model generative storytelling, including Midjourney, VEO, Kling and ElevenLabs.</p>
-                    <a href="#" class="personal-link">Watch QANU</a>
+                    <span class="personal-link coming-soon">Coming Soon</span>
                 </div>
                 <div class="personal-card">
                     <video muted loop playsinline preload="metadata"><source src="assets/loops/cryptic.mp4" type="video/mp4"></video>
