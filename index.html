@@ -25,7 +25,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
 
     <style>
         /* --- 1. GLOBAL & RESET --- */
@@ -294,8 +294,15 @@
             color: #ccff00;
         }
 
-        /* The 'x' in crossover titles: ultra-thin, matching the / glyph */
-        h1 .thin-x { font-weight: 200; }
+        /* The x device in crossover titles: a straight thin-line multiplication
+           sign, sized up to match the weight and reach of the / device */
+        h1 .thin-x {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 100;
+            font-size: 1.15em;
+            line-height: 0; /* keep the larger glyph from expanding the line box */
+            vertical-align: -0.06em;
+        }
         
         p { 
             font-family: 'Roboto', sans-serif;
@@ -1075,7 +1082,7 @@
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
-            <h1>Telekom <span class="thin-x">x</span><br>Stranger Things</h1>
+            <h1>Telekom <span class="thin-x">&times;</span><br>Stranger Things</h1>
             <p>How to weave a tech brand into Netflix's most watched show of all time.</p>
             <button type="button" class="btn" onclick="openDetail('magentatv')">View Campaign</button>
         </div>
@@ -1185,7 +1192,7 @@
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ps-battlefield.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">M. van Heijningen</span></div>
-            <h1>PlayStation <span class="thin-x">x</span><br>Battlefield 6</h1>
+            <h1>PlayStation <span class="thin-x">&times;</span><br>Battlefield 6</h1>
             <p>Deconstructing the chaos of war to showcase next-gen immersion.</p>
             <button type="button" class="btn" onclick="openDetail('ps_battlefield')">Watch Spot</button>
         </div>
@@ -1235,7 +1242,7 @@
         <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ea-closer.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Cinematography</span></div>
-            <h1>PlayStation <span class="thin-x">x</span><br>EAFC</h1>
+            <h1>PlayStation <span class="thin-x">&times;</span><br>EAFC</h1>
             <p>Innovative macro-cinematography that pulls players into the game's molecular detail.</p>
             <button type="button" class="btn" onclick="openDetail('fc_closer')">Get Closer</button>
         </div>
@@ -2316,6 +2323,35 @@
                 splashInput.select();
             }
         });
+
+        // --- BACKGROUND WARM-UP DURING THE GATE ---
+        // While the password screen is up, buffer the loop videos in slide
+        // order (two at a time) so the first slides play instantly on unlock.
+        // Warming stops the moment the gate opens: from then on bandwidth
+        // belongs to whatever is actually on screen.
+        (function warmLoopsDuringSplash() {
+            if (!document.body.classList.contains('locked')) return;
+            const queue = [...document.querySelectorAll('.project-slide .bg-video')];
+            let i = 0;
+            function next() {
+                if (!document.body.classList.contains('locked') || i >= queue.length) return;
+                const v = queue[i++];
+                const done = () => {
+                    v.removeEventListener('canplaythrough', done);
+                    v.removeEventListener('error', done);
+                    clearTimeout(fallback);
+                    next();
+                };
+                // don't let one slow or broken file stall the rest of the queue
+                const fallback = setTimeout(done, 8000);
+                v.addEventListener('canplaythrough', done);
+                v.addEventListener('error', done);
+                v.preload = 'auto';
+                v.load();
+            }
+            next();
+            next();
+        })();
 
     </script>
 </body>
