@@ -148,11 +148,9 @@
             background-color: #222;
             scroll-snap-align: start;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.7);
-            
-            /* Stability improvements */
-            transform: translateZ(0);
-            backface-visibility: hidden;
-            will-change: transform;
+            /* Do NOT force GPU layers here (translateZ / will-change):
+               with 20 full-screen sticky slides it exhausts GPU memory
+               and causes flashing further down the page. */
         }
 
         /* FIXED: Footer specific styles to prevent glitching */
@@ -166,8 +164,6 @@
         .bg-image, .bg-video {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; opacity: 0.6; transition: transform 10s ease; z-index: 0;
-            backface-visibility: hidden;
-            transform: translateZ(0);
         }
         .project-slide:hover .bg-image, .project-slide:hover .bg-video { transform: scale(1.05); }
 
@@ -888,21 +884,21 @@
             <div class="detail-desc">A range of experimental R&D projects exploring emerging AI, music, and behavioural interfaces.</div>
             <div class="grid-layout">
                 <div class="personal-card">
-                    <video autoplay muted loop playsinline><source src="assets/loops/obtran.mp4" type="video/mp4"></video>
+                    <video muted loop playsinline preload="metadata"><source src="assets/loops/obtran.mp4" type="video/mp4"></video>
                     <span class="tag lime">Electronic vinyl imprint</span><br><br>
                     <h3>Oblivious Transfer</h3>
                     <p>An experimental vinyl label distributed by Clone, featuring comic inserts by artists including Jake Lunt Davies and Alice Bloomfield.</p>
                     <a onclick="openDetail('oblivious')" class="personal-link">Listen</a>
                 </div>
                 <div class="personal-card">
-                    <video autoplay muted loop playsinline><source src="assets/loops/qanu.mp4" type="video/mp4"></video>
+                    <video muted loop playsinline preload="metadata"><source src="assets/loops/qanu.mp4" type="video/mp4"></video>
                     <span class="tag purple">GEN AI SHORT FILM</span><br><br>
                     <h3>QANU</h3>
                     <p>Exploration in multi-model generative storytelling, including Midjourney, VEO, Kling and ElevenLabs.</p>
                     <a href="#" class="personal-link">Watch QANU</a>
                 </div>
                 <div class="personal-card">
-                    <video autoplay muted loop playsinline><source src="assets/loops/cryptic.mp4" type="video/mp4"></video>
+                    <video muted loop playsinline preload="metadata"><source src="assets/loops/cryptic.mp4" type="video/mp4"></video>
                     <span class="tag orange">VIBE CODING</span><br><br>
                     <h3>Cryptic Kitten</h3>
                     <p>A web-based app created in one evening, to help new players become familiar with the techniques of cryptic crosswords.</p>
@@ -946,7 +942,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
             <h1>Telekom x<br>Stranger Things</h1>
@@ -956,7 +952,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/hm.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/hm.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film</span><span class="tag">Wes Anderson</span></div>
             <h1>H&M /<br>Come Together</h1>
@@ -966,7 +962,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/johnlewis.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/johnlewis.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Brand Campaign</span><span class="tag">Partnership</span></div>
             <h1>John Lewis /<br>Bohemian Rhapsody</h1>
@@ -976,7 +972,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/fifa-tornado.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/fifa-tornado.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Gaming</span><span class="tag">Activation</span></div>
             <h1>EA Sports /<br>More Than a Game</h1>
@@ -986,7 +982,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/honda.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/honda.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Interactive Film</span><span class="tag">Daniel Wolfe</span></div>
             <h1>Honda /<br>The Other Side</h1>
@@ -996,7 +992,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/vw-yourwagen.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/vw-yourwagen.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Brand Platform</span><span class="tag">Documentary</span></div>
             <h1>Volkswagen /<br>YourWagen</h1>
@@ -1006,7 +1002,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/iams-waylon.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/iams-waylon.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Activation</span><span class="tag">Health</span></div>
             <h1>IAMS /<br>Waylon</h1>
@@ -1016,7 +1012,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/garfield.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/garfield.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Partnership</span><span class="tag">Animation</span></div>
             <h1>IAMS /<br>Garfield</h1>
@@ -1026,7 +1022,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ps5-edge.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ps5-edge.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Global Launch</span><span class="tag">Play Has No Limits</span></div>
             <h1>PlayStation 5 /<br>The Edge</h1>
@@ -1036,7 +1032,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/vw-unseen.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/vw-unseen.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Product Demo</span></div>
             <h1>Volkswagen /<br>See the Unseen</h1>
@@ -1046,7 +1042,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ps-wrong.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ps-wrong.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Campaign</span><span class="tag">Street Culture</span></div>
             <h1>EA Sports /<br>Wrong Breaks New Ground</h1>
@@ -1056,7 +1052,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ps-battlefield.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ps-battlefield.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">M. van Heijningen</span></div>
             <h1>PlayStation x<br>Battlefield 6</h1>
@@ -1066,7 +1062,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/mercedes.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/mercedes.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Branded Ent</span><span class="tag">Carl Erik Rinsch</span></div>
             <h1>Mercedes-Benz /<br>Escape the Map</h1>
@@ -1076,7 +1072,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/doritos.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/doritos.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Interactive Film</span><span class="tag">The Glue Society</span></div>
             <h1>Doritos /<br>Dip Desperado</h1>
@@ -1086,7 +1082,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/google-loch.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/google-loch.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Interactive</span><span class="tag">Street View</span></div>
             <h1>Google Maps /<br>Loch Ness</h1>
@@ -1096,7 +1092,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/iams-ai.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/iams-ai.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">AI Innovation</span><span class="tag">Google Veo</span></div>
             <h1>IAMS /<br>Puppy/Kitten Studios</h1>
@@ -1106,7 +1102,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/ea-closer.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/ea-closer.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Film Craft</span><span class="tag">Cinematography</span></div>
             <h1>PlayStation x<br>EAFC</h1>
@@ -1116,7 +1112,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/virgin.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/virgin.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Integrated</span><span class="tag">Connectivity</span></div>
             <h1>Virgin Media /<br>Faster Brings Us Closer</h1>
@@ -1126,7 +1122,7 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" autoplay muted loop playsinline><source src="assets/loops/capital.mp4" type="video/mp4"></video>
+        <video class="bg-video" muted loop playsinline preload="metadata"><source src="assets/loops/capital.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">Rebrand</span><span class="tag">Identity</span></div>
             <h1>Capital Radio /<br>Rebrand</h1>
@@ -1678,8 +1674,17 @@
             console.log('Portfolio initialized');
         };
 
-        // ARROW KEY NAVIGATION
+        // KEYBOARD NAVIGATION
         window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                closeMenu();
+                closeAbout();
+                closePersonal();
+                if (document.getElementById('detailPanel').classList.contains('open')) closeDetail();
+                return;
+            }
+            // Don't scroll the page behind an open panel or menu
+            if (document.querySelector('.detail-panel.open, .overlay.active')) return;
             if (e.key === "ArrowDown") {
                 window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
             } else if (e.key === "ArrowUp") {
@@ -1911,7 +1916,7 @@
                 data.quotes.forEach(q => {
                     quoteHTML += `
                         <div class="quote-row">
-                            <img src="assets/images/logos/${q.logo}" alt="Source Logo" class="quote-logo">
+                            <img src="assets/images/logos/${q.logo}" alt="Source Logo" class="quote-logo" loading="lazy">
                             <span class="quote-text">${q.text}</span>
                         </div>
                     `;
@@ -2015,6 +2020,8 @@
                 data.images.forEach(item => {
                     if (typeof item === 'string') {
                         const img = document.createElement('img');
+                        img.loading = 'lazy';
+                        img.decoding = 'async';
                         img.src = `assets/images/${item}`;
                         // Don't add .stack-img if we are in a grid layout, let CSS handle it
                         if (!data.imageLayout) {
@@ -2024,6 +2031,8 @@
                     } else {
                         const figure = document.createElement('figure');
                         const img = document.createElement('img');
+                        img.loading = 'lazy';
+                        img.decoding = 'async';
                         img.src = `assets/images/${item.src}`;
                         if (!data.imageLayout) {
                             img.classList.add('stack-img');
@@ -2043,6 +2052,8 @@
             fullWidthImgContainer.innerHTML = '';
             if (data.fullWidthImage) {
                 const fwImg = document.createElement('img');
+                fwImg.loading = 'lazy';
+                fwImg.decoding = 'async';
                 fwImg.src = `assets/images/${data.fullWidthImage}`;
                 fwImg.style.width = '100%';
                 fwImg.style.display = 'block';
@@ -2073,6 +2084,59 @@
                 panel.scrollTop = 0;
             }, 700);
         }
+
+        // --- LOOP VIDEO PLAYBACK MANAGER ---
+        // The project slides are position:sticky, so every slide scrolled past
+        // stays pinned underneath the current one. If every loop plays at once
+        // the browser must keep all covered slides composited, which exhausts
+        // GPU memory further down the page and causes flashing. Only slides
+        // actually on screen (plus the next one, for preloading) get to play.
+        const loopSlides = Array.from(document.querySelectorAll('.project-slide'));
+        const panelLoops = document.querySelectorAll('#personalPanel video');
+
+        function setPlayback(video, shouldPlay) {
+            if (shouldPlay && video.paused) video.play().catch(() => {});
+            else if (!shouldPlay && !video.paused) video.pause();
+        }
+
+        function updateLoopPlayback() {
+            const vh = window.innerHeight;
+            const blocked = !!document.querySelector('.detail-panel.open, .overlay.active');
+            loopSlides.forEach((slide, i) => {
+                const video = slide.querySelector('.bg-video');
+                if (!video) return;
+                // Start playing just before the slide scrolls into view...
+                const entered = slide.getBoundingClientRect().top < vh * 1.25;
+                // ...and stop once the next sticky slide fully covers it.
+                const next = loopSlides[i + 1];
+                const covered = next ? next.getBoundingClientRect().top <= 0 : false;
+                setPlayback(video, entered && !covered && !blocked);
+            });
+            // Personal panel loops only run while that panel is open
+            const personalOpen = document.getElementById('personalPanel').classList.contains('open');
+            panelLoops.forEach(v => setPlayback(v, personalOpen));
+        }
+
+        let loopUpdateQueued = false;
+        function queueLoopUpdate() {
+            if (loopUpdateQueued) return;
+            loopUpdateQueued = true;
+            requestAnimationFrame(() => {
+                loopUpdateQueued = false;
+                updateLoopPlayback();
+            });
+        }
+
+        window.addEventListener('scroll', queueLoopUpdate, { passive: true });
+        window.addEventListener('resize', queueLoopUpdate, { passive: true });
+
+        // React to panels / menu opening and closing (class changes)
+        const loopStateObserver = new MutationObserver(queueLoopUpdate);
+        document.querySelectorAll('.detail-panel, .overlay').forEach(el => {
+            loopStateObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+        });
+
+        updateLoopPlayback();
 
     </script>
 </body>
