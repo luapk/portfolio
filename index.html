@@ -140,42 +140,30 @@
             border: none;     
         }
 
-        /* NAV ACTIONS (view toggle + burger) */
+        /* NAV ACTIONS (view toggle + burger) — one icon set:
+           every glyph is drawn on the same 24-unit grid (shapes span 3..21),
+           same stroke weight, rendered at the same 20px box. */
         .nav-actions {
             display: flex;
-            align-items: flex-start;
-            gap: 24px;
+            align-items: center;
+            gap: 22px;
+            margin-top: 5px;
         }
-
-        /* GRID / CINEMATIC VIEW TOGGLE */
-        .view-toggle {
-            width: 24px; height: 24px;
-            margin-top: 3px;
+        .nav-icon {
+            width: 20px; height: 20px;
             mix-blend-mode: difference;
             transition: opacity 0.3s ease;
             pointer-events: auto;
+            z-index: 210;
         }
-        .view-toggle svg { display: block; width: 100%; height: 100%; fill: none; stroke: #fff; stroke-width: 1.5; }
-        .view-toggle:hover svg { stroke: #ccff00; }
+        .nav-icon svg { display: block; width: 100%; height: 100%; fill: none; stroke: #fff; stroke-width: 1.5; }
+        .nav-icon:hover svg { stroke: #ccff00; }
+
         .view-toggle .icon-cine { display: none; }
         html.grid-mode .view-toggle .icon-grid { display: none; }
         html.grid-mode .view-toggle .icon-cine { display: block; }
         .view-toggle.menu-open { opacity: 0; pointer-events: none; }
 
-        /* BURGER MENU ICON */
-        .burger {
-            width: 30px; height: 20px; cursor: pointer;
-            display: flex; flex-direction: column; justify-content: space-between;
-            z-index: 210;
-            transition: opacity 0.3s ease;
-            pointer-events: auto;
-            margin-top: 5px; 
-            mix-blend-mode: difference;
-        }
-        .burger span {
-            display: block; width: 100%; height: 2px; background: #fff; transition: all 0.3s ease;
-        }
-        .burger:hover span { background: #ccff00; }
         .burger.active { opacity: 0; pointer-events: none; }
 
         /* --- 3. MENU OVERLAY (ACID) --- */
@@ -948,20 +936,21 @@
             <div class="logo-tag logo-role">CREATIVE DIRECTOR</div>
         </a>
         <div class="nav-actions">
-            <button type="button" class="view-toggle" id="viewToggle" onclick="toggleView()" aria-label="Switch to grid view" aria-pressed="false">
+            <button type="button" class="nav-icon view-toggle" id="viewToggle" onclick="toggleView()" aria-label="Switch to grid view" aria-pressed="false">
                 <svg class="icon-grid" viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="2.5" y="2.5" width="5" height="5"/><rect x="9.5" y="2.5" width="5" height="5"/><rect x="16.5" y="2.5" width="5" height="5"/>
-                    <rect x="2.5" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/><rect x="16.5" y="9.5" width="5" height="5"/>
-                    <rect x="2.5" y="16.5" width="5" height="5"/><rect x="9.5" y="16.5" width="5" height="5"/><rect x="16.5" y="16.5" width="5" height="5"/>
+                    <rect x="3" y="3" width="7.5" height="7.5"/><rect x="13.5" y="3" width="7.5" height="7.5"/>
+                    <rect x="3" y="13.5" width="7.5" height="7.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5"/>
                 </svg>
                 <svg class="icon-cine" viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="2" y="5.5" width="20" height="13"/>
+                    <rect x="3" y="6.5" width="18" height="11"/>
                 </svg>
             </button>
-            <button type="button" class="burger" onclick="toggleMenu()" aria-label="Open menu">
-                <span></span>
-                <span></span>
-                <span></span>
+            <button type="button" class="nav-icon burger" onclick="toggleMenu()" aria-label="Open menu">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <line x1="3" y1="6.5" x2="21" y2="6.5"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="17.5" x2="21" y2="17.5"/>
+                </svg>
             </button>
         </div>
     </nav>
