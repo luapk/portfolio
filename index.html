@@ -27,6 +27,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
 
+    <!-- ANALYTICS (Umami — cookieless, so no consent banner needed).
+         To activate: create a site at https://cloud.umami.is and paste its
+         website ID below. Until then this does nothing. -->
+    <script>
+        window.UMAMI_WEBSITE_ID = ''; // e.g. '1a2b3c4d-5e6f-7890-abcd-ef1234567890'
+        if (window.UMAMI_WEBSITE_ID) {
+            const umamiScript = document.createElement('script');
+            umamiScript.defer = true;
+            umamiScript.src = 'https://cloud.umami.is/script.js';
+            umamiScript.setAttribute('data-website-id', window.UMAMI_WEBSITE_ID);
+            document.head.appendChild(umamiScript);
+        }
+    </script>
+
     <style>
         /* --- 1. GLOBAL & RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1419,6 +1433,11 @@
     </div>
 
     <script>
+        // Safe wrapper: no-ops until the Umami script is active
+        function track(event, data) {
+            if (window.umami && typeof umami.track === 'function') umami.track(event, data);
+        }
+
         const projectData = {
             loomer: {
                 title: "Loomer",
@@ -2095,6 +2114,7 @@
         }
 
         function openDetail(projectId) {
+            track('project-open', { project: projectId });
             const panel = document.getElementById('detailPanel');
             const container = document.getElementById('videoContainer');
             const quoteContainer = document.getElementById('panelQuotes');
@@ -2498,6 +2518,7 @@
         document.getElementById('splashForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if (splashInput.value.trim().toLowerCase() === SPLASH_PASSWORD) {
+                track('gate-unlocked');
                 sessionStorage.setItem('pk_unlocked', '1');
                 splashEl.classList.add('hidden');
                 document.body.classList.remove('locked');
@@ -2615,6 +2636,7 @@
             btn.setAttribute('aria-pressed', String(grid));
             btn.setAttribute('aria-label', grid ? 'Switch to cinematic view' : 'Switch to grid view');
             sessionStorage.setItem('pk_view', grid ? 'grid' : 'cine');
+            track('view-mode', { mode: grid ? 'grid' : 'cinematic' });
             if (grid) warmGridPosters();
             else workGrid.querySelectorAll('video').forEach(v => v.pause());
             window.scrollTo({ top: 0, behavior: 'instant' });
