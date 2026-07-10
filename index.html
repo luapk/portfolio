@@ -351,6 +351,12 @@
             object-fit: cover; opacity: 0.6; transition: transform 10s ease; z-index: 0;
         }
         .project-slide:hover .bg-image, .project-slide:hover .bg-video { transform: scale(1.05); }
+        /* While actively scrolling, slides sweeping under a stationary cursor
+           would each start this 10s zoom transition — a pile-up of animating
+           GPU layers that makes fast scrolling glitch. Suspend it until the
+           scroll settles (.is-scrolling is managed by the playback manager). */
+        body.is-scrolling .project-slide:hover .bg-image,
+        body.is-scrolling .project-slide:hover .bg-video { transform: none; transition: none; }
 
         .content {
             position: relative; z-index: 10; width: 100%; max-width: 1200px;
@@ -2465,7 +2471,13 @@
                 // ...and stop once the next sticky slide fully covers it.
                 const next = loopSlides[i + 1];
                 const covered = next ? next.getBoundingClientRect().top <= 0 : false;
-                setPlayback(video, entered && !covered && !blocked);
+                const eligible = entered && !covered && !blocked;
+                // During a fast flick, don't START videos on slides flying past
+                // (each play() kicks off a network fetch that's abandoned a
+                // frame later). The settle pass right after scrolling stops
+                // starts the slide the user actually landed on.
+                if (fastScroll && eligible && video.paused) return;
+                setPlayback(video, eligible);
             });
             // Personal panel loops only run while that panel is open
             const personalOpen = document.getElementById('personalPanel').classList.contains('open');
@@ -2473,16 +2485,34 @@
         }
 
         let loopUpdateQueued = false;
+        let lastScrollY = window.scrollY;
+        let fastScroll = false;
         function queueLoopUpdate() {
             if (loopUpdateQueued) return;
             loopUpdateQueued = true;
             requestAnimationFrame(() => {
                 loopUpdateQueued = false;
+                // More than a quarter viewport per frame = a flick, not a browse
+                fastScroll = Math.abs(window.scrollY - lastScrollY) > window.innerHeight * 0.25;
+                lastScrollY = window.scrollY;
                 updateLoopPlayback();
             });
         }
 
-        window.addEventListener('scroll', queueLoopUpdate, { passive: true });
+        // While scrolling: suppress the slow hover-zoom (see .is-scrolling CSS)
+        // and arm the settle pass that starts playback once movement stops.
+        let scrollSettleTimer = null;
+        window.addEventListener('scroll', () => {
+            document.body.classList.add('is-scrolling');
+            clearTimeout(scrollSettleTimer);
+            scrollSettleTimer = setTimeout(() => {
+                document.body.classList.remove('is-scrolling');
+                fastScroll = false;
+                lastScrollY = window.scrollY;
+                updateLoopPlayback();
+            }, 150);
+            queueLoopUpdate();
+        }, { passive: true });
         window.addEventListener('resize', queueLoopUpdate, { passive: true });
 
         // React to panels / menu opening and closing (class changes)
@@ -2512,6 +2542,9 @@
                 splashEl.classList.add('hidden');
                 document.body.classList.remove('locked');
                 queueLoopUpdate();
+                // give the first slides a moment of bandwidth, then decode a
+                // poster frame for every remaining loop
+                setTimeout(primeFirstFrames, 1200);
             } else {
                 const form = document.getElementById('splashForm');
                 document.getElementById('splashError').classList.add('show');
@@ -2550,6 +2583,47 @@
             next();
             next();
         })();
+
+        // --- FIRST-FRAME PRIMING ---
+        // A paused video with no decoded frame paints as an empty panel, which
+        // is what fast scrollers used to land on. Once the page is unlocked,
+        // walk the loops one at a time and decode just the first frame of each
+        // (a tiny ranged fetch) so every slide always shows an image, even when
+        // the user outruns the playback manager.
+        let framesPrimed = false;
+        function primeFirstFrames() {
+            if (framesPrimed) return;
+            framesPrimed = true;
+            const vids = [...document.querySelectorAll('.project-slide .bg-video')];
+            let i = 0;
+            function next() {
+                // skip videos that already have a decoded frame (or are playing)
+                while (i < vids.length && vids[i].readyState >= 2) i++;
+                if (i >= vids.length) return;
+                const v = vids[i++];
+                const finish = () => {
+                    v.removeEventListener('seeked', finish);
+                    v.removeEventListener('error', finish);
+                    clearTimeout(fallback);
+                    next();
+                };
+                const fallback = setTimeout(finish, 6000);
+                v.addEventListener('seeked', finish);
+                v.addEventListener('error', finish);
+                const seek = () => {
+                    if (!v.paused) { finish(); return; } // started playing meanwhile
+                    try { v.currentTime = Math.max(v.currentTime, 0.001); }
+                    catch (e) { finish(); }
+                };
+                if (v.readyState >= 1) seek();
+                else v.addEventListener('loadedmetadata', seek, { once: true });
+            }
+            next();
+        }
+        // Returning visitors skip the gate: prime once the first slides settle.
+        if (!document.body.classList.contains('locked')) {
+            setTimeout(primeFirstFrames, 1500);
+        }
 
         // --- GRID VIEW ---
         // Build a thumbnail card for each cinematic slide. Thumbs are paused
