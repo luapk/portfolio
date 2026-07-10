@@ -2444,14 +2444,58 @@
             }, 700);
         }
 
-        // --- LOOP VIDEO PLAYBACK MANAGER ---
+        // --- LOOP VIDEO PLAYBACK + MEDIA WINDOW MANAGER ---
         // The project slides are position:sticky, so every slide scrolled past
-        // stays pinned underneath the current one. If every loop plays at once
-        // the browser must keep all covered slides composited, which exhausts
-        // GPU memory further down the page and causes flashing. Only slides
-        // actually on screen (plus the next one, for preloading) get to play.
+        // stays pinned underneath the current one. Two hard browser limits
+        // shape this code: GPU memory (a full-screen layer per composited
+        // slide) and the media decoder pool (roughly a dozen live videos —
+        // beyond it, deep slides simply render blank). So only slides near
+        // the viewport keep a live video element at all: far slides have
+        // their src detached entirely (their bytes stay in the HTTP cache,
+        // so re-attaching is cheap), and only the visible slide plays.
         const loopSlides = Array.from(document.querySelectorAll('.project-slide'));
         const panelLoops = document.querySelectorAll('#personalPanel video');
+        const slideVideos = loopSlides.map(s => s.querySelector('.bg-video'));
+
+        // Take ownership of each source: the URL lives in data-src and is
+        // attached only while the slide is inside the window below.
+        slideVideos.forEach(v => {
+            if (!v) return;
+            const sourceEl = v.querySelector('source');
+            v.dataset.src = sourceEl ? sourceEl.getAttribute('src') : (v.getAttribute('src') || '');
+            if (sourceEl) sourceEl.remove();
+            v.removeAttribute('src');
+            v.preload = 'none';
+        });
+
+        const ATTACH_WINDOW = 3;   // slides around the viewport keep a decoded frame
+        const RELEASE_WINDOW = 5;  // beyond this, the media resource is dropped
+
+        function attachVideo(v) {
+            if (!v.getAttribute('src')) {
+                v.preload = 'metadata';
+                v.src = v.dataset.src;
+                v.dataset.primed = '';
+            }
+            if (!v.dataset.primed) {
+                v.dataset.primed = '1';
+                // decode one frame so the slide shows a still before it plays
+                const seekFrame = () => {
+                    if (v.paused) { try { v.currentTime = Math.max(v.currentTime, 0.001); } catch (e) {} }
+                };
+                if (v.readyState >= 1) seekFrame();
+                else v.addEventListener('loadedmetadata', seekFrame, { once: true });
+            }
+        }
+
+        function releaseVideo(v) {
+            if (!v.getAttribute('src')) return;
+            if (!v.paused) v.pause();
+            v.removeAttribute('src');
+            v.preload = 'none';
+            v.dataset.primed = '';
+            v.load(); // lets the browser free the element's buffer and decoder
+        }
 
         function setPlayback(video, shouldPlay) {
             if (shouldPlay && video.paused) video.play().catch(() => {});
@@ -2463,20 +2507,30 @@
             const blocked = !!document.querySelector('.detail-panel.open, .overlay.active')
                 || document.body.classList.contains('locked')
                 || document.documentElement.classList.contains('grid-mode');
+            const tops = loopSlides.map(s => s.getBoundingClientRect().top);
+            // The deepest pinned slide is the one covering the screen now
+            let currentIndex = 0;
+            tops.forEach((t, i) => { if (t <= 1) currentIndex = i; });
+
             loopSlides.forEach((slide, i) => {
-                const video = slide.querySelector('.bg-video');
+                const video = slideVideos[i];
                 if (!video) return;
-                // Start playing just before the slide scrolls into view...
-                const entered = slide.getBoundingClientRect().top < vh * 1.25;
+                // Play just before the slide scrolls into view...
+                const entered = tops[i] < vh * 1.25;
                 // ...and stop once the next sticky slide fully covers it.
-                const next = loopSlides[i + 1];
-                const covered = next ? next.getBoundingClientRect().top <= 0 : false;
+                const covered = i + 1 < loopSlides.length ? tops[i + 1] <= 0 : false;
                 const eligible = entered && !covered && !blocked;
-                // During a fast flick, don't START videos on slides flying past
-                // (each play() kicks off a network fetch that's abandoned a
-                // frame later). The settle pass right after scrolling stops
-                // starts the slide the user actually landed on.
-                if (fastScroll && eligible && video.paused) return;
+                const dist = Math.abs(i - currentIndex);
+
+                // During a fast flick only cheap pauses happen — attaching,
+                // releasing and play-starts wait for the settle pass so slides
+                // flying past don't each grab bandwidth and a decoder.
+                if (fastScroll) {
+                    if (!eligible) setPlayback(video, false);
+                    return;
+                }
+                if (dist <= ATTACH_WINDOW || eligible) attachVideo(video);
+                else if (dist > RELEASE_WINDOW) { releaseVideo(video); return; }
                 setPlayback(video, eligible);
             });
             // Personal panel loops only run while that panel is open
@@ -2542,9 +2596,6 @@
                 splashEl.classList.add('hidden');
                 document.body.classList.remove('locked');
                 queueLoopUpdate();
-                // give the first slides a moment of bandwidth, then decode a
-                // poster frame for every remaining loop
-                setTimeout(primeFirstFrames, 1200);
             } else {
                 const form = document.getElementById('splashForm');
                 document.getElementById('splashError').classList.add('show');
@@ -2577,53 +2628,13 @@
                 const fallback = setTimeout(done, 8000);
                 v.addEventListener('canplaythrough', done);
                 v.addEventListener('error', done);
+                if (!v.getAttribute('src') && v.dataset.src) v.src = v.dataset.src;
                 v.preload = 'auto';
                 v.load();
             }
             next();
             next();
         })();
-
-        // --- FIRST-FRAME PRIMING ---
-        // A paused video with no decoded frame paints as an empty panel, which
-        // is what fast scrollers used to land on. Once the page is unlocked,
-        // walk the loops one at a time and decode just the first frame of each
-        // (a tiny ranged fetch) so every slide always shows an image, even when
-        // the user outruns the playback manager.
-        let framesPrimed = false;
-        function primeFirstFrames() {
-            if (framesPrimed) return;
-            framesPrimed = true;
-            const vids = [...document.querySelectorAll('.project-slide .bg-video')];
-            let i = 0;
-            function next() {
-                // skip videos that already have a decoded frame (or are playing)
-                while (i < vids.length && vids[i].readyState >= 2) i++;
-                if (i >= vids.length) return;
-                const v = vids[i++];
-                const finish = () => {
-                    v.removeEventListener('seeked', finish);
-                    v.removeEventListener('error', finish);
-                    clearTimeout(fallback);
-                    next();
-                };
-                const fallback = setTimeout(finish, 6000);
-                v.addEventListener('seeked', finish);
-                v.addEventListener('error', finish);
-                const seek = () => {
-                    if (!v.paused) { finish(); return; } // started playing meanwhile
-                    try { v.currentTime = Math.max(v.currentTime, 0.001); }
-                    catch (e) { finish(); }
-                };
-                if (v.readyState >= 1) seek();
-                else v.addEventListener('loadedmetadata', seek, { once: true });
-            }
-            next();
-        }
-        // Returning visitors skip the gate: prime once the first slides settle.
-        if (!document.body.classList.contains('locked')) {
-            setTimeout(primeFirstFrames, 1500);
-        }
 
         // --- GRID VIEW ---
         // Build a thumbnail card for each cinematic slide. Thumbs are paused
@@ -2636,9 +2647,9 @@
         document.querySelectorAll('.project-slide:not(.footer-slide)').forEach(slide => {
             const slideBtn = slide.querySelector('.btn');
             const idMatch = slideBtn && (slideBtn.getAttribute('onclick') || '').match(/openDetail\('([^']+)'\)/);
-            const source = slide.querySelector('.bg-video source');
+            const bgVideo = slide.querySelector('.bg-video');
             const h1 = slide.querySelector('h1');
-            if (!idMatch || !source || !h1) return;
+            if (!idMatch || !bgVideo || !bgVideo.dataset.src || !h1) return;
 
             const card = document.createElement('button');
             card.type = 'button';
@@ -2650,7 +2661,7 @@
             const v = document.createElement('video');
             v.muted = true; v.loop = true; v.playsInline = true;
             v.preload = 'none'; // fetch nothing until grid view is first opened
-            v.src = source.getAttribute('src');
+            v.src = bgVideo.dataset.src;
             thumb.appendChild(v);
 
             // Tags fade in over the thumb on hover, as on the cinematic slide
