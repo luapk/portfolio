@@ -338,8 +338,35 @@
                and causes flashing further down the page. */
         }
 
+        /* SCROLL HINT (first slide): arrow-key keycap, drawn on the same
+           24-unit hairline grid as the nav icons. Fades once the user moves. */
+        .scroll-hint {
+            position: absolute; right: 40px; bottom: 40px; z-index: 20;
+            display: flex; align-items: center; gap: 12px;
+            color: #fff; opacity: 0.85;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+        .scroll-hint.done { opacity: 0; }
+        .scroll-hint-label {
+            font-family: 'Roboto', sans-serif; font-weight: 400;
+            font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+        }
+        .scroll-hint svg {
+            display: block; width: 28px; height: 28px;
+            fill: none; stroke: #fff; stroke-width: 1.5;
+            animation: hint-bob 2.2s ease-in-out infinite;
+        }
+        @keyframes hint-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        @media (prefers-reduced-motion: reduce) { .scroll-hint svg { animation: none; } }
+        /* no keyboard to hint at on touch devices */
+        @media (max-width: 768px), (hover: none) { .scroll-hint { display: none; } }
+
         /* FIXED: Footer specific styles to prevent glitching */
-        .project-slide:last-of-type { 
+        .project-slide:last-of-type {
             position: relative; 
             background-color: #111; 
             z-index: 99; /* Higher than sticky slides to ensure clean cover */
@@ -1229,6 +1256,13 @@
             <h1>PS5 <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Marvel's Wolverine</h1>
             <p>The roadblock takeover that stole the show at San Diego Comic-Con.</p>
             <button type="button" class="btn" onclick="openDetail('wolverine')">View Campaign</button>
+        </div>
+        <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+            <span class="scroll-hint-label">Arrow keys</span>
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <path d="M12 8 v7.5 M8.75 12.25 L12 15.5 L15.25 12.25"/>
+            </svg>
         </div>
     </div>
 
@@ -2532,6 +2566,8 @@
             let currentIndex = 0;
             tops.forEach((t, i) => { if (t <= 1) currentIndex = i; });
 
+            const now = performance.now();
+            let recheckIn = 0;
             loopSlides.forEach((slide, i) => {
                 const video = slideVideos[i];
                 if (!video) return;
@@ -2540,7 +2576,7 @@
                 // ...and stop once the next sticky slide fully covers it.
                 const covered = i + 1 < loopSlides.length ? tops[i + 1] <= 0 : false;
                 const eligible = entered && !covered && !blocked;
-                const dist = Math.abs(i - currentIndex);
+                const dist = i - currentIndex;
 
                 // During a fast flick only cheap pauses happen — attaching,
                 // releasing and play-starts wait for the settle pass so slides
@@ -2549,14 +2585,37 @@
                     if (!eligible) setPlayback(video, false);
                     return;
                 }
+                // Slides scrolled past are fully covered by the sticky stack:
+                // free their decoder right away (the poster covers back-scroll).
+                if (dist < -1) { video._eligSince = 0; releaseVideo(video); return; }
                 if (dist <= ATTACH_WINDOW || eligible) attachVideo(video);
-                else if (dist > RELEASE_WINDOW) { releaseVideo(video); return; }
-                setPlayback(video, eligible);
+                else if (dist > RELEASE_WINDOW) { video._eligSince = 0; releaseVideo(video); return; }
+
+                // A video must stay eligible for a beat before it may start.
+                // Continuous scrolling otherwise plays every slide for a few
+                // frames in passing, and the transient decoders it burns are
+                // what made late slides render blank.
+                if (eligible) {
+                    if (!video._eligSince) video._eligSince = now;
+                    const waited = now - video._eligSince;
+                    if (waited >= PLAY_DEBOUNCE || !video.paused) setPlayback(video, true);
+                    else recheckIn = Math.max(recheckIn, PLAY_DEBOUNCE - waited);
+                } else {
+                    video._eligSince = 0;
+                    setPlayback(video, false);
+                }
             });
+            // Something is waiting out its debounce: come back for it
+            if (recheckIn > 0) {
+                clearTimeout(playDebounceTimer);
+                playDebounceTimer = setTimeout(updateLoopPlayback, recheckIn + 30);
+            }
             // Personal panel loops only run while that panel is open
             const personalOpen = document.getElementById('personalPanel').classList.contains('open');
             panelLoops.forEach(v => setPlayback(v, personalOpen));
         }
+        const PLAY_DEBOUNCE = 200; // ms a slide must hold still before playing
+        let playDebounceTimer = null;
 
         let loopUpdateQueued = false;
         let lastScrollY = window.scrollY;
@@ -2576,7 +2635,12 @@
         // While scrolling: suppress the slow hover-zoom (see .is-scrolling CSS)
         // and arm the settle pass that starts playback once movement stops.
         let scrollSettleTimer = null;
+        let scrollHintDone = false;
         window.addEventListener('scroll', () => {
+            if (!scrollHintDone && window.scrollY > window.innerHeight * 0.4) {
+                scrollHintDone = true;
+                document.getElementById('scrollHint').classList.add('done');
+            }
             document.body.classList.add('is-scrolling');
             clearTimeout(scrollSettleTimer);
             scrollSettleTimer = setTimeout(() => {
