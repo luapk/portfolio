@@ -367,23 +367,24 @@
 
         /* FIXED: Footer specific styles to prevent glitching */
         .project-slide:last-of-type {
-            position: relative; 
-            background-color: #111; 
+            position: relative;
+            background-color: #111;
             z-index: 99; /* Higher than sticky slides to ensure clean cover */
             box-shadow: none; /* No shadow needed for the footer itself */
+            /* No snap point at the document's end: proximity snap otherwise
+               tugs the viewport while settling into the footer, which reads
+               as flicker on the footer links. */
+            scroll-snap-align: none;
         }
 
         .bg-image, .bg-video {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; opacity: 0.6; transition: transform 10s ease; z-index: 0;
         }
-        .project-slide:hover .bg-image, .project-slide:hover .bg-video { transform: scale(1.05); }
-        /* While actively scrolling, slides sweeping under a stationary cursor
-           would each start this 10s zoom transition — a pile-up of animating
-           GPU layers that makes fast scrolling glitch. Suspend it until the
-           scroll settles (.is-scrolling is managed by the playback manager). */
-        body.is-scrolling .project-slide:hover .bg-image,
-        body.is-scrolling .project-slide:hover .bg-video { transform: none; transition: none; }
+        /* The slow zoom follows PLAYBACK, not hover: the active slide eases
+           in while it plays. (The old cursor-hover zoom toggled with every
+           scroll event, visibly snapping the video between zoom states.) */
+        .project-slide.playing .bg-image, .project-slide.playing .bg-video { transform: scale(1.05); }
 
         .content {
             position: relative; z-index: 10; width: 100%; max-width: 1200px;
@@ -2034,7 +2035,7 @@
 
             sortedKeys.forEach(key => {
                 // Skip personal projects for the main work index footer
-                if(key === 'oblivious' || key === 'loomer') return;
+                if(key === 'oblivious' || key === 'loomer' || key === 'vinyl') return;
 
                 const link = document.createElement('button');
                 link.type = 'button';
@@ -2572,6 +2573,9 @@
         function setPlayback(video, shouldPlay) {
             if (shouldPlay && video.paused) video.play().catch(() => {});
             else if (!shouldPlay && !video.paused) video.pause();
+            // The active slide's slow zoom rides on this class
+            const slide = video.closest('.project-slide');
+            if (slide) slide.classList.toggle('playing', shouldPlay);
         }
 
         function updateLoopPlayback() {
@@ -2588,12 +2592,16 @@
             let recheckIn = 0;
             loopSlides.forEach((slide, i) => {
                 const video = slideVideos[i];
-                if (!video) return;
                 // Play just before the slide scrolls into view...
                 const entered = tops[i] < vh * 1.25;
                 // ...and stop once the next sticky slide fully covers it.
                 const covered = i + 1 < loopSlides.length ? tops[i + 1] <= 0 : false;
                 const eligible = entered && !covered && !blocked;
+                if (!video) {
+                    // Static-image slides still get the slow active zoom
+                    slide.classList.toggle('playing', eligible);
+                    return;
+                }
                 const dist = i - currentIndex;
 
                 // During a fast flick only cheap pauses happen — attaching,
@@ -2604,8 +2612,9 @@
                     return;
                 }
                 // Slides scrolled past are fully covered by the sticky stack:
-                // free their decoder right away (the poster covers back-scroll).
-                if (dist < -1) { video._eligSince = 0; releaseVideo(video); return; }
+                // free their decoder soon after (two kept for boundary
+                // hysteresis and back-scrolling; the poster covers the rest).
+                if (dist < -2) { video._eligSince = 0; releaseVideo(video); return; }
                 if (dist <= ATTACH_WINDOW || eligible) attachVideo(video);
                 else if (dist > RELEASE_WINDOW) { video._eligSince = 0; releaseVideo(video); return; }
 
@@ -2650,8 +2659,7 @@
             });
         }
 
-        // While scrolling: suppress the slow hover-zoom (see .is-scrolling CSS)
-        // and arm the settle pass that starts playback once movement stops.
+        // Arm the settle pass that starts playback once movement stops.
         let scrollSettleTimer = null;
         let scrollHintDone = false;
         window.addEventListener('scroll', () => {
@@ -2659,10 +2667,8 @@
                 scrollHintDone = true;
                 document.getElementById('scrollHint').classList.add('done');
             }
-            document.body.classList.add('is-scrolling');
             clearTimeout(scrollSettleTimer);
             scrollSettleTimer = setTimeout(() => {
-                document.body.classList.remove('is-scrolling');
                 fastScroll = false;
                 lastScrollY = window.scrollY;
                 updateLoopPlayback();
