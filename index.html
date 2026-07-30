@@ -1519,12 +1519,13 @@
                 title: "PS5 x Marvel's Wolverine",
                 meta: "PlayStation / adam&eveDDB",
                 desc: "Launching Marvel's Wolverine demanded more than mass-reach media. A character this beloved had to cut deep with the core fandom first. So instead of spreading the budget thin, we concentrated everything into a single roadblock takeover of San Diego Comic-Con 2026 and stole the show. The iconic claw marks held the campaign together, slashed across the largest building wrap in the city and the trolleys carrying fans to the convention. A giant severed Sentinel head, torn straight from the game world, became the weekend's most shared photo opp. The most coveted merch on the floor: Wolverine claws, and a prequel comic created with the game's own writers. And inside the convention centre, a lifelike Logan statue stopped foot traffic dead. Berserk rage, carefully art-directed.",
-                // Campaign films to follow — paste Vimeo ids when ready:
-                // vimeoId: "",
-                // extraVideos: [{ title: "", vimeoId: "" }],
                 imageLayout: "grid-gallery-2col",
                 images: ["wolverine-1.jpg", "wolverine-2.jpg", "wolverine-3.jpg", "wolverine-5.jpg"],
                 fullWidthImage: "wolverine-4.jpg",
+                // renders after the photo gallery
+                extraVideos: [
+                    { title: "Campaign Film", vimeoId: "1214259080?h=8453bd6ba8" }
+                ],
                 credits: [
                     "CREATIVE DIRECTOR: PAUL KNOTT",
                     "EXPERIENTIAL PRODUCTION: KAP MEDIA",
@@ -2060,10 +2061,27 @@
             }
             // Don't scroll the page behind an open panel or menu
             if (document.querySelector('.detail-panel.open, .overlay.active')) return;
-            if (e.key === "ArrowDown") {
-                window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
-            } else if (e.key === "ArrowUp") {
-                window.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+            // Grid view scrolls freely; slide-snapping is cinematic-only
+            if (document.documentElement.classList.contains('grid-mode')) return;
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                // One tap = one whole slide. preventDefault stops the browser's
+                // native incremental arrow-scroll stacking on top and drifting
+                // the page off slide boundaries.
+                e.preventDefault();
+                const slides = document.querySelectorAll('.project-slide');
+                const tops = []; let acc = 0;
+                slides.forEach(s => { tops.push(acc); acc += s.offsetHeight; });
+                const y = window.scrollY;
+                let cur = 0;
+                tops.forEach((t, i) => { if (t <= y + 2) cur = i; });
+                let target;
+                if (e.key === "ArrowDown") {
+                    target = Math.min(cur + 1, tops.length - 1);
+                } else {
+                    // Part-way down a slide, up first realigns to its top
+                    target = y - tops[cur] > 2 ? cur : Math.max(cur - 1, 0);
+                }
+                window.scrollTo({ top: tops[target], behavior: 'smooth' });
             }
         });
 
