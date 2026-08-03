@@ -334,23 +334,6 @@
             transition-delay: 0.12s;
         }
 
-        /* Viewfinder corner marks: hairline acid brackets that ease outward
-           into the thumbnail's corners, echoing the x and nav icon devices. */
-        .grid-corners { position: absolute; inset: 0; pointer-events: none; }
-        .grid-corners i {
-            position: absolute; width: 14px; height: 14px;
-            border: 0 solid #ccff00;
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .grid-corners i:nth-child(1) { top: 10px; left: 10px; border-top-width: 1.5px; border-left-width: 1.5px; transform: translate(5px, 5px); }
-        .grid-corners i:nth-child(2) { top: 10px; right: 10px; border-top-width: 1.5px; border-right-width: 1.5px; transform: translate(-5px, 5px); }
-        .grid-corners i:nth-child(3) { bottom: 10px; left: 10px; border-bottom-width: 1.5px; border-left-width: 1.5px; transform: translate(5px, -5px); }
-        .grid-corners i:nth-child(4) { bottom: 10px; right: 10px; border-bottom-width: 1.5px; border-right-width: 1.5px; transform: translate(-5px, -5px); }
-        .grid-card:hover .grid-corners i, .grid-card:focus-visible .grid-corners i {
-            opacity: 1; transform: translate(0, 0);
-        }
-
         /* Entry cascade: cards rise in on a diagonal wave when grid view opens */
         @keyframes grid-card-in {
             from { opacity: 0; transform: translateY(26px); }
@@ -412,7 +395,7 @@
         @media (prefers-reduced-motion: reduce) {
             .scroll-hint svg { animation: none; }
             html.grid-mode .work-grid.cascade .grid-card { animation: none; }
-            .grid-rule, .grid-tags, .grid-sub, .grid-corners i,
+            .grid-rule, .grid-tags, .grid-sub,
             .grid-thumb video, .grid-thumb img { transition-duration: 0.01ms; }
         }
         /* no keyboard to hint at on touch devices */
@@ -2844,12 +2827,6 @@
                 tags.innerHTML = tagRow.innerHTML;
                 thumb.appendChild(tags);
             }
-
-            // Viewfinder corner marks
-            const corners = document.createElement('div');
-            corners.className = 'grid-corners';
-            corners.innerHTML = '<i></i><i></i><i></i><i></i>';
-            thumb.appendChild(corners);
 
             const title = document.createElement('div');
             title.className = 'grid-title';
