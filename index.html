@@ -409,11 +409,34 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(5px); }
         }
+        /* SCANNING HERO: a tall poster shown at full width, easing top to
+           bottom so the whole cover is read over time. The slide clips it. */
+        .project-slide.scan-slide { overflow: hidden; }
+        .bg-scan {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: auto;
+            min-height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            z-index: 0;
+            /* -100% lifts the image by its own height; +100vh brings its
+               bottom edge back to the foot of the screen, so the pan covers
+               exactly the overhang however tall the artwork is. */
+            animation: bg-scan 26s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
+        }
+        @keyframes bg-scan {
+            from { transform: translateY(0); }
+            to   { transform: translateY(calc(-100% + 100vh)); }
+        }
+        /* the active-slide zoom is for cover images; a scanning one has its own move */
+        .project-slide.playing .bg-scan { transform: none; }
+
         @media (prefers-reduced-motion: reduce) {
             .scroll-hint svg { animation: none; }
             html.grid-mode .work-grid.cascade .grid-card { animation: none; }
             .grid-rule, .grid-tags, .grid-sub, .grid-corners i,
             .grid-thumb video, .grid-thumb img { transition-duration: 0.01ms; }
+            .bg-scan { animation: none; }
         }
         /* no keyboard to hint at on touch devices */
         @media (max-width: 768px), (hover: none) { .scroll-hint { display: none; } }
@@ -1470,9 +1493,8 @@
         </div>
     </div>
 
-    <div class="project-slide">
-        <!-- TODO: awaiting hero asset (see note) -->
-        <img class="bg-image" src="assets/images/hidden-cities-hero.jpg" alt="">
+    <div class="project-slide scan-slide">
+        <img class="bg-scan" src="assets/images/hidden-cities-london.jpg" alt="">
         <div class="content">
             <div class="tag-row"><span class="tag">VR</span><span class="tag">Editorial</span></div>
             <h1>FT <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span> Google<br>Hidden Cities</h1>
@@ -2840,7 +2862,7 @@
             const slideBtn = slide.querySelector('.btn');
             const idMatch = slideBtn && (slideBtn.getAttribute('onclick') || '').match(/openDetail\('([^']+)'\)/);
             const bgVideo = slide.querySelector('.bg-video');
-            const bgImage = slide.querySelector('.bg-image');
+            const bgImage = slide.querySelector('.bg-image, .bg-scan');
             const h1 = slide.querySelector('h1');
             if (!idMatch || !h1 || !(bgVideo || bgImage)) return;
 
