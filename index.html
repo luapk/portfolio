@@ -293,9 +293,10 @@
         }
         .grid-card:hover .grid-title, .grid-card:focus-visible .grid-title { color: #ccff00; }
 
-        /* Hover reveals: tags fade in over the thumb (echoing the cinematic
-           slides' top-left tag row), subline fades up beneath the title.
-           The subline keeps its space when hidden so the grid never reflows. */
+        /* Hover reveals, choreographed rather than fading all at once:
+           the acid rule draws out, then the tags drop in, then the subline
+           rises. Delays apply on the way IN only — on exit everything
+           retracts together so the card clears promptly. */
         .grid-tags {
             position: absolute; top: 12px; left: 12px;
             display: flex; gap: 6px; flex-wrap: wrap;
@@ -304,16 +305,60 @@
             pointer-events: none;
         }
         .grid-tags .tag { font-size: 0.6rem; padding: 3px 8px; }
+
+        /* Acid rule: same rapid left-to-right sweep as the menu underline */
+        .grid-rule {
+            display: block; height: 1.5px; background: #ccff00;
+            margin-top: 12px;
+            transform: scaleX(0);
+            transform-origin: right center;
+            transition: transform 0.16s cubic-bezier(0.65, 0, 0.35, 1);
+        }
         .grid-sub {
             font-family: 'Roboto', sans-serif; font-weight: 300;
             font-size: 0.85rem; line-height: 1.45; color: #bbb;
-            margin-top: 8px; max-width: 40ch;
+            margin-top: 10px; max-width: 40ch;
             opacity: 0; transform: translateY(8px);
             transition: opacity 0.25s ease, transform 0.25s ease;
         }
-        .grid-card:hover .grid-tags, .grid-card:focus-visible .grid-tags,
+        .grid-card:hover .grid-rule, .grid-card:focus-visible .grid-rule {
+            transform: scaleX(1);
+            transform-origin: left center;
+        }
+        .grid-card:hover .grid-tags, .grid-card:focus-visible .grid-tags {
+            opacity: 1; transform: translateY(0);
+            transition-delay: 0.06s;
+        }
         .grid-card:hover .grid-sub, .grid-card:focus-visible .grid-sub {
             opacity: 1; transform: translateY(0);
+            transition-delay: 0.12s;
+        }
+
+        /* Viewfinder corner marks: hairline acid brackets that ease outward
+           into the thumbnail's corners, echoing the x and nav icon devices. */
+        .grid-corners { position: absolute; inset: 0; pointer-events: none; }
+        .grid-corners i {
+            position: absolute; width: 14px; height: 14px;
+            border: 0 solid #ccff00;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .grid-corners i:nth-child(1) { top: 10px; left: 10px; border-top-width: 1.5px; border-left-width: 1.5px; transform: translate(5px, 5px); }
+        .grid-corners i:nth-child(2) { top: 10px; right: 10px; border-top-width: 1.5px; border-right-width: 1.5px; transform: translate(-5px, 5px); }
+        .grid-corners i:nth-child(3) { bottom: 10px; left: 10px; border-bottom-width: 1.5px; border-left-width: 1.5px; transform: translate(5px, -5px); }
+        .grid-corners i:nth-child(4) { bottom: 10px; right: 10px; border-bottom-width: 1.5px; border-right-width: 1.5px; transform: translate(-5px, -5px); }
+        .grid-card:hover .grid-corners i, .grid-card:focus-visible .grid-corners i {
+            opacity: 1; transform: translate(0, 0);
+        }
+
+        /* Entry cascade: cards rise in on a diagonal wave when grid view opens */
+        @keyframes grid-card-in {
+            from { opacity: 0; transform: translateY(26px); }
+            to { opacity: 1; transform: none; }
+        }
+        html.grid-mode .work-grid.cascade .grid-card {
+            animation: grid-card-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: calc(var(--stagger, 0) * 45ms);
         }
         @media (max-width: 1000px) {
             html.grid-mode .work-grid { grid-template-columns: repeat(2, 1fr); }
@@ -364,7 +409,12 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(5px); }
         }
-        @media (prefers-reduced-motion: reduce) { .scroll-hint svg { animation: none; } }
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-hint svg { animation: none; }
+            html.grid-mode .work-grid.cascade .grid-card { animation: none; }
+            .grid-rule, .grid-tags, .grid-sub, .grid-corners i,
+            .grid-thumb video, .grid-thumb img { transition-duration: 0.01ms; }
+        }
         /* no keyboard to hint at on touch devices */
         @media (max-width: 768px), (hover: none) { .scroll-hint { display: none; } }
 
@@ -2795,6 +2845,12 @@
                 thumb.appendChild(tags);
             }
 
+            // Viewfinder corner marks
+            const corners = document.createElement('div');
+            corners.className = 'grid-corners';
+            corners.innerHTML = '<i></i><i></i><i></i><i></i>';
+            thumb.appendChild(corners);
+
             const title = document.createElement('div');
             title.className = 'grid-title';
             title.innerHTML = h1.innerHTML.replace(/<br\s*\/?>/gi, ' ');
@@ -2802,7 +2858,12 @@
             card.appendChild(thumb);
             card.appendChild(title);
 
-            // Subline fades up beneath the title on hover
+            // Acid rule draws out above the subline
+            const rule = document.createElement('span');
+            rule.className = 'grid-rule';
+            card.appendChild(rule);
+
+            // Subline fades up beneath the rule on hover
             const slideSub = slide.querySelector('.content p');
             if (slideSub) {
                 const sub = document.createElement('div');
@@ -2817,6 +2878,19 @@
             workGrid.appendChild(card);
         });
 
+        // Diagonal wave for the entry cascade: cards on the same diagonal
+        // share a delay, so the grid fills from the top-left corner outward.
+        // (Based on the 3-column layout; still reads as a wave at 2 and 1.)
+        [...workGrid.children].forEach((card, i) => {
+            card.style.setProperty('--stagger', Math.floor(i / 3) + (i % 3));
+        });
+
+        function runGridCascade() {
+            workGrid.classList.remove('cascade');
+            void workGrid.offsetWidth; // restart the animation
+            workGrid.classList.add('cascade');
+        }
+
         function toggleView() {
             const grid = document.documentElement.classList.toggle('grid-mode');
             const btn = document.getElementById('viewToggle');
@@ -2824,7 +2898,8 @@
             btn.setAttribute('aria-label', grid ? 'Switch to cinematic view' : 'Switch to grid view');
             sessionStorage.setItem('pk_view', grid ? 'grid' : 'cine');
             track('view-mode', { mode: grid ? 'grid' : 'cinematic' });
-            if (!grid) workGrid.querySelectorAll('video').forEach(v => v.pause());
+            if (grid) runGridCascade();
+            else workGrid.querySelectorAll('video').forEach(v => v.pause());
             window.scrollTo({ top: 0, behavior: 'instant' });
             queueLoopUpdate();
         }
