@@ -1471,6 +1471,17 @@
     </div>
 
     <div class="project-slide">
+        <!-- TODO: awaiting hero asset (see note) -->
+        <img class="bg-image" src="assets/images/hidden-cities-hero.jpg" alt="">
+        <div class="content">
+            <div class="tag-row"><span class="tag">VR</span><span class="tag">Editorial</span></div>
+            <h1>FT <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span> Google<br>Hidden Cities</h1>
+            <p>Putting a VR headset inside the weekend paper.</p>
+            <button type="button" class="btn" onclick="openDetail('ft_hidden_cities')">View Campaign</button>
+        </div>
+    </div>
+
+    <div class="project-slide">
         <video class="bg-video" muted loop playsinline preload="metadata" poster="assets/posters/iams-ai.jpg"><source src="assets/loops/iams-ai.mp4" type="video/mp4"></video>
         <div class="content">
             <div class="tag-row"><span class="tag">AI Innovation</span><span class="tag">Google Veo</span></div>
@@ -2004,6 +2015,17 @@
                     { text: "“Pure, unadulterated fun.”", logo: "thesun.png" }
                 ]
             },
+            ft_hidden_cities: {
+                title: "FT x Google / Hidden Cities",
+                meta: "Financial Times & Google / adam&eveDDB",
+                desc: "The FT's journalism goes where the guidebooks don't. Hidden Cities set out to prove it, and to put readers inside the story rather than in front of it. Each edition took a city apart through the FT's own correspondents, then handed subscribers the means to step into it: a Google Cardboard viewer bound into the weekend paper, turning a phone into a headset. The films were shot in 360 with ambisonic sound, so a rooftop or a street market arrived with its own acoustics rather than a voiceover's. An interactive Google map tied every place of interest in the supplement back to the reporting that named it, letting readers move between the written piece and the spherical footage without leaving the story. The defining edition landed as Rio prepared for the 2016 Olympics, reported from inside communities being remade by the Games — the version of the city the broadcast coverage flew over.",
+                youtubeId: "Tkho9hsrfzU",
+                credits: [
+                    "CREATIVE DIRECTOR: PAUL KNOTT",
+                    "FILM PRODUCTION: VISUALISE",
+                    "FT WEEKEND EXECUTIVE EDITOR: NATALIE WHITTLE"
+                ]
+            },
             google_loch: {
                 title: "Google Maps / Loch Ness",
                 meta: "Google Maps / adam&eveDDB",
@@ -2440,9 +2462,18 @@
             if(data.vimeoId) {
                 const joiner = data.vimeoId.includes('?') ? '&' : '?';
                 container.innerHTML = `
-                    <iframe src="https://player.vimeo.com/video/${data.vimeoId}${joiner}autoplay=1&loop=1&title=0&byline=0&portrait=0" 
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                    <iframe src="https://player.vimeo.com/video/${data.vimeoId}${joiner}autoplay=1&loop=1&title=0&byline=0&portrait=0"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
                     frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                `;
+                container.style.display = 'block';
+            } else if (data.youtubeId) {
+                // Click-to-play: these are narrated films, and YouTube only
+                // permits autoplay when muted. 360 films play back natively.
+                container.innerHTML = `
+                    <iframe src="https://www.youtube-nocookie.com/embed/${data.youtubeId}?rel=0&modestbranding=1"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                    frameborder="0" allow="accelerometer; gyroscope; fullscreen; picture-in-picture" allowfullscreen></iframe>
                 `;
                 container.style.display = 'block';
             } else {
