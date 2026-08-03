@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Paul Knott</title>
+    <title>Paul Knott | Creative Director</title>
     
     <meta name="description" content="Portfolio of Paul Knott, Creative Director at adam&eve /TBWA. Work includes Honda 'The Other Side', Stranger Things x MagentaTV, and FIFA 'El Tornado'.">
     <meta name="keywords" content="Paul Knott, Creative Director, Advertising, adam&eve /TBWA, Wieden+Kennedy, AI, Film">
@@ -20,8 +20,9 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://www.paulknott.com/assets/images/social-share.jpg">
 
-    <link rel="icon" type="image/png" href="assets/images/favicon.png">
-    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <!-- No tab icon: an explicit empty favicon stops the browser falling back
+         to /favicon.ico (which would 404 on every page load). -->
+    <link rel="icon" href="data:,">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -354,9 +355,11 @@
         }
         .scroll-hint svg {
             display: block; width: 28px; height: 28px;
-            fill: none; stroke: #fff; stroke-width: 1.5;
             animation: hint-bob 2.2s ease-in-out infinite;
         }
+        /* Solid acid keycap, black arrow */
+        .scroll-hint svg rect { fill: #ccff00; stroke: none; }
+        .scroll-hint svg path { fill: none; stroke: #000; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
         @keyframes hint-bob {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(5px); }
@@ -1251,12 +1254,12 @@
     <section class="work-grid" id="workGrid" aria-label="Project grid"></section>
 
     <div class="project-slide">
-        <img class="bg-image" src="assets/images/wolverine-hero.jpg" alt="">
+        <video class="bg-video" muted loop playsinline preload="metadata" poster="assets/posters/magenta.jpg"><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
         <div class="content">
-            <div class="tag-row"><span class="tag">Comic-Con</span><span class="tag">Fandom</span><span class="tag">Integrated</span></div>
-            <h1>PS5 <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Marvel's Wolverine</h1>
-            <p>The roadblock takeover that stole the show at San Diego Comic-Con.</p>
-            <button type="button" class="btn" onclick="openDetail('wolverine')">View Campaign</button>
+            <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
+            <h1>Telekom <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Stranger Things</h1>
+            <p>How to weave a tech brand into the most-watched show in Netflix history.</p>
+            <button type="button" class="btn" onclick="openDetail('magentatv')">View Campaign</button>
         </div>
         <div class="scroll-hint" id="scrollHint" aria-hidden="true">
             <span class="scroll-hint-label">Arrow keys</span>
@@ -1268,12 +1271,12 @@
     </div>
 
     <div class="project-slide">
-        <video class="bg-video" muted loop playsinline preload="metadata" poster="assets/posters/magenta.jpg"><source src="assets/loops/magenta.mp4" type="video/mp4"></video>
+        <img class="bg-image" src="assets/images/wolverine-head.jpg" alt="">
         <div class="content">
-            <div class="tag-row"><span class="tag">Branded Entertainment</span><span class="tag">Netflix</span></div>
-            <h1>Telekom <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Stranger Things</h1>
-            <p>How to weave a tech brand into the most-watched show in Netflix history.</p>
-            <button type="button" class="btn" onclick="openDetail('magentatv')">View Campaign</button>
+            <div class="tag-row"><span class="tag">Comic-Con</span><span class="tag">Fandom</span><span class="tag">Integrated</span></div>
+            <h1>PS5 <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Marvel's Wolverine</h1>
+            <p>The roadblock takeover that stole the show at San Diego Comic-Con 2026.</p>
+            <button type="button" class="btn" onclick="openDetail('wolverine')">View Campaign</button>
         </div>
     </div>
 
