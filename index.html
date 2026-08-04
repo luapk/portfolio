@@ -235,6 +235,24 @@
             color: rgba(0,0,0,0.45);
             font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
         }
+        /* Keep the browser's own chrome in the acid palette. Autofill paints
+           its default white/blue behind the text, and it ignores
+           background-color — an inset shadow is the only way to cover it,
+           with the long transition stopping Chrome reapplying its colour.
+           Selection matters too: a wrong password re-selects the field. */
+        .splash-input:-webkit-autofill,
+        .splash-input:-webkit-autofill:hover,
+        .splash-input:-webkit-autofill:focus,
+        .splash-input:-webkit-autofill:active,
+        .splash-input:autofill {
+            -webkit-text-fill-color: #000;
+            caret-color: #000;
+            -webkit-box-shadow: 0 0 0 100px #ccff00 inset;
+            box-shadow: 0 0 0 100px #ccff00 inset;
+            transition: background-color 100000s ease-in-out 0s;
+        }
+        .splash ::selection { background: #000; color: #ccff00; }
+        .splash ::-moz-selection { background: #000; color: #ccff00; }
         .splash-btn {
             font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 11px;
             text-transform: uppercase; letter-spacing: 1.5px;
