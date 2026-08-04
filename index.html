@@ -385,33 +385,45 @@
                and causes flashing further down the page. */
         }
 
-        /* SCROLL HINT (first slide): arrow-key keycap, drawn on the same
-           24-unit hairline grid as the nav icons. Fades once the user moves. */
+        /* SCROLL HINT: persistent arrow-key keycaps, fixed bottom-right,
+           drawn on the same 24-unit hairline grid as the nav icons. Which
+           keys show depends on where the reader is (see .at-top/.at-end);
+           both slots always hold their space so the widget never jumps. */
         .scroll-hint {
-            position: absolute; right: 40px; bottom: 40px; z-index: 20;
-            display: flex; align-items: center; gap: 12px;
+            position: fixed; right: 40px; bottom: 40px; z-index: 120;
+            display: flex; align-items: center; gap: 10px;
             color: #fff; opacity: 0.85;
-            transition: opacity 0.6s ease;
+            transition: opacity 0.4s ease;
             pointer-events: none;
         }
-        .scroll-hint.done { opacity: 0; }
+        .scroll-hint.hidden { opacity: 0; }
         .scroll-hint-label {
             font-family: 'Roboto', sans-serif; font-weight: 400;
             font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+            margin-right: 2px;
         }
-        .scroll-hint svg {
+        .hint-key {
             display: block; width: 28px; height: 28px;
-            animation: hint-bob 2.2s ease-in-out infinite;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .hint-key svg { display: block; width: 100%; height: 100%; }
         /* Solid acid keycap, black arrow */
-        .scroll-hint svg rect { fill: #ccff00; stroke: none; }
-        .scroll-hint svg path { fill: none; stroke: #000; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+        .hint-key svg rect { fill: #ccff00; stroke: none; }
+        .hint-key svg path { fill: none; stroke: #000; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* First panel: nowhere to go but down. Footer: nowhere but up. */
+        .scroll-hint.at-top .hint-up,
+        .scroll-hint.at-end .hint-down { opacity: 0; transform: scale(0.7); }
+
+        /* The down key bobs only while the hint is still an invitation —
+           once the reader is navigating, it settles rather than nagging. */
+        .scroll-hint.at-top .hint-down svg { animation: hint-bob 2.2s ease-in-out infinite; }
         @keyframes hint-bob {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(5px); }
         }
         @media (prefers-reduced-motion: reduce) {
-            .scroll-hint svg { animation: none; }
+            .scroll-hint .hint-key svg { animation: none; }
             html.grid-mode .work-grid.cascade .grid-card { animation: none; }
             .grid-rule, .grid-tags, .grid-sub,
             .grid-thumb video, .grid-thumb img { transition-duration: 0.01ms; }
@@ -1018,6 +1030,22 @@
         }
     </script>
 
+    <div class="scroll-hint at-top" id="scrollHint" aria-hidden="true">
+        <span class="scroll-hint-label">Arrow keys</span>
+        <span class="hint-key hint-up">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <path d="M12 16 v-7.5 M8.75 11.75 L12 8.5 L15.25 11.75"/>
+            </svg>
+        </span>
+        <span class="hint-key hint-down">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <path d="M12 8 v7.5 M8.75 12.25 L12 15.5 L15.25 12.25"/>
+            </svg>
+        </span>
+    </div>
+
     <nav class="nav-bar">
         <a class="logo-container" href="/" aria-label="Home">
             <div class="logo-tag logo-name">PAUL KNOTT</div>
@@ -1311,13 +1339,6 @@
             <h1>Telekom <span class="thin-x" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><line x1="22" y1="2" x2="2" y2="22"/></svg></span><br>Stranger Things</h1>
             <p>How to position a tech brand inside the most-watched show in Netflix history.</p>
             <button type="button" class="btn" onclick="openDetail('magentatv')">View Campaign</button>
-        </div>
-        <div class="scroll-hint" id="scrollHint" aria-hidden="true">
-            <span class="scroll-hint-label">Arrow keys</span>
-            <svg viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="3"/>
-                <path d="M12 8 v7.5 M8.75 12.25 L12 15.5 L15.25 12.25"/>
-            </svg>
         </div>
     </div>
 
@@ -2695,9 +2716,26 @@
             // Personal panel loops only run while that panel is open
             const personalOpen = document.getElementById('personalPanel').classList.contains('open');
             panelLoops.forEach(v => setPlayback(v, personalOpen));
+
+            updateScrollHint(blocked);
         }
         const PLAY_DEBOUNCE = 200; // ms a slide must hold still before playing
         let playDebounceTimer = null;
+
+        // The arrow-key hint stays up throughout, showing only the directions
+        // that lead somewhere: down alone on the first panel, both in the
+        // middle, up alone once the footer is reached.
+        const scrollHintEl = document.getElementById('scrollHint');
+        const footerSlide = document.querySelector('.footer-slide');
+        function updateScrollHint(blocked) {
+            // Grid view scrolls freely, so there are no slides to step through
+            const gridMode = document.documentElement.classList.contains('grid-mode');
+            scrollHintEl.classList.toggle('hidden', !!blocked || gridMode);
+            if (blocked || gridMode) return;
+            scrollHintEl.classList.toggle('at-top', window.scrollY < window.innerHeight * 0.5);
+            scrollHintEl.classList.toggle('at-end',
+                !!footerSlide && footerSlide.getBoundingClientRect().top <= 1);
+        }
 
         let loopUpdateQueued = false;
         let lastScrollY = window.scrollY;
@@ -2716,12 +2754,7 @@
 
         // Arm the settle pass that starts playback once movement stops.
         let scrollSettleTimer = null;
-        let scrollHintDone = false;
         window.addEventListener('scroll', () => {
-            if (!scrollHintDone && window.scrollY > window.innerHeight * 0.4) {
-                scrollHintDone = true;
-                document.getElementById('scrollHint').classList.add('done');
-            }
             clearTimeout(scrollSettleTimer);
             scrollSettleTimer = setTimeout(() => {
                 fastScroll = false;
