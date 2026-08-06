@@ -1303,6 +1303,9 @@
 
             <div class="portrait-layout" id="portraitContainer" style="display: none;"></div>
 
+            <!-- vertical film row, shown above the copy -->
+            <div id="topVideoRow" class="video-row video-row-top" style="display: none;"></div>
+
             <div class="detail-video-wrapper" id="videoContainer"></div>
             <div class="detail-meta" id="panelMeta">Client / Role</div>
             <h2 class="detail-title" id="panelTitle">Project Title</h2>
@@ -1595,13 +1598,15 @@
                 title: "PS5 x Marvel's Wolverine",
                 meta: "PlayStation / adam&eveDDB",
                 desc: "Launching Marvel's Wolverine demanded more than mass-reach media. A character this beloved had to cut deep with the core fandom first. So instead of spreading the budget thin, we concentrated everything into a single roadblock takeover of San Diego Comic-Con 2026 and stole the show. Marvel's top-tier influencers activated it on the ground, putting the campaign in front of a combined following of more than 30 million. The iconic claw marks held the campaign together, slashed across the largest building wrap in the city and the trolleys carrying fans to the convention. A giant severed Sentinel head, torn straight from the game world, became the weekend's most shared photo opp. The most coveted merch on the floor: Wolverine claws, and a prequel comic created with the game's own writers. And inside the convention centre, a lifelike Logan statue stopped foot traffic dead.",
+                // three vertical films, shown above the copy
+                topVideos: [
+                    { id: "1216107298", h: "3782f885bf", title: "Teaser Reel 01" },
+                    { id: "1216107299", h: "104d3749c9", title: "Teaser Reel 02" },
+                    { id: "1214259080", h: "8453bd6ba8", title: "Teaser Reel 03" }
+                ],
                 imageLayout: "grid-gallery-2col",
                 images: ["wolverine-1.jpg", "wolverine-2.jpg", "wolverine-3.jpg", "wolverine-5.jpg"],
                 fullWidthImage: "wolverine-4.jpg",
-                // renders after the photo gallery
-                extraVideos: [
-                    { title: "Campaign Film", vimeoId: "1214259080?h=8453bd6ba8" }
-                ],
                 credits: [
                     "CREATIVE DIRECTOR: PAUL KNOTT",
                     "EXPERIENTIAL PRODUCTION: KAP MEDIA",
@@ -2263,6 +2268,28 @@
             }
         }
 
+        // Builds a row of 9:16 films. Accepts either "id?h=hash" strings or
+        // { id, h, title } objects, and clears the row when there is no data.
+        function fillVideoRow(el, videos) {
+            el.innerHTML = '';
+            if (!videos || !videos.length) { el.style.display = 'none'; return; }
+            el.style.display = 'grid';
+            el.innerHTML = videos.map(vid => {
+                const raw = String(vid.id || vid.vimeoId || vid);
+                const hash = vid.h ? `&h=${vid.h}` : '';
+                const joiner = raw.includes('?') ? '&' : '?';
+                return `
+                    <div class="video-col">
+                        <div class="video-wrapper-916">
+                            <iframe src="https://player.vimeo.com/video/${raw}${joiner}autoplay=0&loop=1&title=0&byline=0&portrait=0${hash}"
+                            style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                            frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-caption">${vid.title || ''}</div>
+                    </div>`;
+            }).join('');
+        }
+
         function openDetail(projectId) {
             track('project-open', { project: projectId });
             const panel = document.getElementById('detailPanel');
@@ -2274,6 +2301,7 @@
             const projectAwardsContainer = document.getElementById('projectAwardsContainer');
             const articleContainer = document.getElementById('articleContainer');
             const videoRowContainer = document.getElementById('videoRowContainer');
+            const topVideoRow = document.getElementById('topVideoRow');
             const buyContainer = document.getElementById('buyContainer');
             const fullWidthImgContainer = document.getElementById('fullWidthImgContainer');
             
@@ -2293,6 +2321,8 @@
             articleContainer.style.display = 'none';
             videoRowContainer.innerHTML = '';
             videoRowContainer.style.display = 'none';
+            topVideoRow.innerHTML = '';
+            topVideoRow.style.display = 'none';
             buyContainer.innerHTML = '';
             buyContainer.style.display = 'none';
             fullWidthImgContainer.innerHTML = '';
@@ -2490,31 +2520,10 @@
                 });
             }
 
-            // NEW: Handle Video Row (3 videos side-by-side)
-            videoRowContainer.innerHTML = '';
-            if (data.videoRow) {
-                videoRowContainer.style.display = 'grid';
-                data.videoRow.forEach(vid => {
-                    const vidId = vid.id || vid;
-                    const hash = vid.h ? `&h=${vid.h}` : '';
-                    const title = vid.title || '';
-
-                    // Removed background=1 to enable play button
-                    const html = `
-                        <div class="video-col">
-                            <div class="video-wrapper-916">
-                                <iframe src="https://player.vimeo.com/video/${vidId}?autoplay=0&loop=1&title=0&byline=0&portrait=0${hash}" 
-                                style="position:absolute;top:0;left:0;width:100%;height:100%;" 
-                                frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-                            </div>
-                            <div class="video-caption">${title}</div>
-                        </div>
-                    `;
-                    videoRowContainer.innerHTML += html;
-                });
-            } else {
-                videoRowContainer.style.display = 'none';
-            }
+            // Handle Video Rows (9:16 films side-by-side). topVideos sits
+            // above the copy; videoRow keeps its place below the images.
+            fillVideoRow(topVideoRow, data.topVideos);
+            fillVideoRow(videoRowContainer, data.videoRow);
 
             // Handle Images
             imageContainer.innerHTML = ''; 
@@ -2589,6 +2598,7 @@
                 document.getElementById('articleContainer').innerHTML = "";
                 document.getElementById('extraVideosContainer').innerHTML = "";
                 document.getElementById('videoRowContainer').innerHTML = "";
+                document.getElementById('topVideoRow').innerHTML = "";
                 document.getElementById('buyContainer').innerHTML = "";
                 document.getElementById('extraImagesContainer').innerHTML = "";
                 document.getElementById('fullWidthImgContainer').innerHTML = "";
