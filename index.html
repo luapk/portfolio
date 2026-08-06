@@ -77,8 +77,14 @@
         }
 
         html {
-            /* FIXED: Changed back to proximity to prevent getting stuck in the footer */
-            scroll-snap-type: y proximity;
+            /* Native snapping is off on purpose. These slides are sticky, and
+               a sticky slide stays visually pinned at the top even once the
+               scroll has moved past it — so the browser keeps deciding the
+               current slide is still aligned and re-snaps to it. Under
+               "mandatory" that makes upward scrolling impossible, and under
+               "proximity" it produces the tug that flickered the footer.
+               Snapping is instead driven from JS once scrolling settles. */
+            scroll-snap-type: none;
             scroll-behavior: smooth;
         }
 
@@ -437,10 +443,6 @@
             background-color: #111;
             z-index: 99; /* Higher than sticky slides to ensure clean cover */
             box-shadow: none; /* No shadow needed for the footer itself */
-            /* No snap point at the document's end: proximity snap otherwise
-               tugs the viewport while settling into the footer, which reads
-               as flicker on the footer links. */
-            scroll-snap-align: none;
         }
 
         .bg-image, .bg-video {
@@ -2149,9 +2151,7 @@
                 // native incremental arrow-scroll stacking on top and drifting
                 // the page off slide boundaries.
                 e.preventDefault();
-                const slides = document.querySelectorAll('.project-slide');
-                const tops = []; let acc = 0;
-                slides.forEach(s => { tops.push(acc); acc += s.offsetHeight; });
+                const tops = slideTops();
                 const y = window.scrollY;
                 let cur = 0;
                 tops.forEach((t, i) => { if (t <= y + 2) cur = i; });
@@ -2761,6 +2761,43 @@
             });
         }
 
+        // Where each slide begins, measured rather than assumed: slides grow
+        // taller than the viewport on narrow screens.
+        function slideTops() {
+            const tops = []; let acc = 0;
+            document.querySelectorAll('.project-slide').forEach(s => {
+                tops.push(acc); acc += s.offsetHeight;
+            });
+            return tops;
+        }
+
+        // Snap the panel squarely into place once scrolling settles. Done in
+        // JS because native snapping fights the sticky slides (see the html
+        // rule). Touch devices are left alone — their momentum already has a
+        // feel of its own, and slides are taller than the screen there.
+        const canSnap = !window.matchMedia('(hover: none)').matches;
+        function snapToNearestSlide() {
+            if (!canSnap) return;
+            if (document.documentElement.classList.contains('grid-mode')) return;
+            if (document.body.classList.contains('locked')) return;
+            if (document.querySelector('.detail-panel.open, .overlay.active')) return;
+
+            const y = window.scrollY;
+            const maxY = document.documentElement.scrollHeight - window.innerHeight;
+            if (y <= 1 || y >= maxY - 1) return; // let the ends rest naturally
+
+            const tops = slideTops();
+            let nearest = tops[0];
+            tops.forEach(t => {
+                if (Math.abs(t - y) < Math.abs(nearest - y)) nearest = t;
+            });
+            // Ignore hairline offsets; otherwise always close the gap. The
+            // nearest edge is never more than half a panel away, so this is
+            // always a short, deliberate-feeling move.
+            if (Math.abs(nearest - y) < 3) return;
+            window.scrollTo({ top: Math.min(nearest, maxY), behavior: 'smooth' });
+        }
+
         // Arm the settle pass that starts playback once movement stops.
         let scrollSettleTimer = null;
         window.addEventListener('scroll', () => {
@@ -2769,6 +2806,7 @@
                 fastScroll = false;
                 lastScrollY = window.scrollY;
                 updateLoopPlayback();
+                snapToNearestSlide();
             }, 150);
             queueLoopUpdate();
         }, { passive: true });
